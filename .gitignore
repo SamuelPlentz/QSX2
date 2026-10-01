@@ -1,0 +1,9 @@
+/bin
+
+/tcmatch.Core/.vs
+/tcmatch.Core/tcmatch.Core/bin
+/tcmatch.Core/tcmatch.Core/obj
+
+/tcmatch/.vs
+/tcmatch/tcmatch/bin
+/tcmatch/tcmatch/obj

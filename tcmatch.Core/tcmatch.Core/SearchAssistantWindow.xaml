@@ -1,0 +1,484 @@
+<Window x:Class="tcmatch.Core.SearchAssistantWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        
+        xmlns:local="clr-namespace:tcmatch.Core;assembly=tcmatch.Core"
+        d:DataContext="{d:DesignInstance Type=local:Config, IsDesignTimeCreatable=False}"
+        
+        Title="Search Assistant" Height="150" Width="350" 
+        WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="Manual">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+
+
+            <!-- Primary Button -->
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="2,1,2,1"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[03_01_01], FallbackValue='#f9fafb'}"/>
+                <Setter Property="Foreground" Value="{Binding B[03_01_02], FallbackValue='#0ea5e9'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[03_01_03], FallbackValue='#0ea5e9'}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[03_01_04], FallbackValue='#0ea5e9'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[03_01_05], FallbackValue='#f9fafb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[03_01_06], FallbackValue='#0ea5e9'}"/>
+                    </Trigger>
+
+                    <!-- Pressed -->
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Background" Value="{Binding B[03_01_07], FallbackValue='#0284c7'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[03_01_08], FallbackValue='#f9fafb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[03_01_09], FallbackValue='#0284c7'}"/>
+                    </Trigger>
+
+                    <!-- Disabled -->
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Cursor" Value="Arrow"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Scope Button -->
+            <Style x:Key="ScopeButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="0,0,0,0"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Height" Value="32"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{Binding B[05_01_02], FallbackValue='#111827'}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{Binding B[05_01_05], FallbackValue='#374151'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Error Button -->
+            <Style x:Key="ErrorButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_02_01], FallbackValue='#fce7f3'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_02_02], FallbackValue='#500724'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_02_03], FallbackValue='#ec4899'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_02_04], FallbackValue='#ec4899'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_02_05], FallbackValue='#fdf2f8'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_02_06], FallbackValue='#ec4899'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Warning Button -->
+            <Style x:Key="WarningButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_03_01], FallbackValue='#fef3c7'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_03_02], FallbackValue='#451a03'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_03_03], FallbackValue='#f59e0b'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_03_04], FallbackValue='#f59e0b'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_03_05], FallbackValue='#fffbeb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_03_06], FallbackValue='#f59e0b'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Information Button -->
+            <Style x:Key="InformationButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_04_01], FallbackValue='#dcfce7'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_04_02], FallbackValue='#052e16'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_04_03], FallbackValue='#22c55e'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_04_04], FallbackValue='#16a34a'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_04_05], FallbackValue='#f0fdf4'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_04_06], FallbackValue='#16a34a'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Logical Operator Button -->
+            <Style x:Key="LogicalOperatorButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_05_01], FallbackValue='#fef3c7'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_05_02], FallbackValue='#451a03'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_05_03], FallbackValue='#f59e0b'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_05_04], FallbackValue='#f59e0b'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_05_05], FallbackValue='#fffbeb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_05_06], FallbackValue='#f59e0b'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Metadata Alias Button -->
+            <Style x:Key="MetadataAliasButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_06_01], FallbackValue='#f3e8ff'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_06_02], FallbackValue='#3b0764'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_06_03], FallbackValue='#a855f7'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_06_04], FallbackValue='#a855f7'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_06_05], FallbackValue='#faf5ff'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_06_06], FallbackValue='#a855f7'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Modifier Button -->
+            <Style x:Key="ModifierButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_07_01], FallbackValue='#fce7f3'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_07_02], FallbackValue='#500724'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_07_03], FallbackValue='#ec4899'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_07_04], FallbackValue='#ec4899'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_07_05], FallbackValue='#fdf2f8'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_07_06], FallbackValue='#ec4899'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Modifier Button (Disabled) -->
+            <Style x:Key="ModifierDisabledButtonStyle" TargetType="Button" BasedOn="{StaticResource ModifierButtonStyle}">
+                <Setter Property="Opacity" Value="0.50"/>
+            </Style>
+            
+            <!-- Search Operator Button -->
+            <Style x:Key="SearchOperatorButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_08_01], FallbackValue='#e0f2fe'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_08_02], FallbackValue='#082f49'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_08_03], FallbackValue='#0ea5e9'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_08_04], FallbackValue='#0ea5e9'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_08_05], FallbackValue='#f0f9ff'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_08_06], FallbackValue='#0ea5e9'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Search Text Button -->
+            <Style x:Key="SearchTextButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_09_01], FallbackValue='#e0f2fe'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_09_02], FallbackValue='#082f49'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_09_03], FallbackValue='#0ea5e9'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_09_04], FallbackValue='#0ea5e9'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_09_05], FallbackValue='#f0f9ff'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_09_06], FallbackValue='#0ea5e9'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Quick Action Button -->
+            <Style x:Key="QuickActionButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="4,1,4,1"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="Margin" Value="0,2,0,2"/>
+                <Setter Property="Height" Value="28"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[05_10_01], FallbackValue='#f1f5f9'}"/>
+                <Setter Property="Foreground" Value="{Binding B[05_10_02], FallbackValue='#020617'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[05_10_03], FallbackValue='#64748b'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,3"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[05_10_04], FallbackValue='#64748b'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[05_10_05], FallbackValue='#f8fafc'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[05_10_06], FallbackValue='#64748b'}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Quick Action Button (Disabled) -->
+            <Style x:Key="QuickActionDisabledButtonStyle" TargetType="Button" BasedOn="{StaticResource QuickActionButtonStyle}">
+                <Setter Property="Opacity" Value="0.50"/>
+            </Style>
+
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border BorderThickness="0,0,1,1" BorderBrush="{Binding B[04_01_03], FallbackValue='#a0a0a0'}">
+        <Border BorderThickness="1,1,0,0" BorderBrush="{Binding B[04_01_02], FallbackValue='#ffffff'}">
+            <Grid Background="{Binding B[04_01_01], FallbackValue='#f0f0f0'}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                    <WrapPanel x:Name="buttonWrapPanel" Orientation="Horizontal" VerticalAlignment="Top" Margin="1"/>
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+    </Border>
+</Window>

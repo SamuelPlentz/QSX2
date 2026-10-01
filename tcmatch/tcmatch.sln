@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.10.12217.157 stable
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tcmatch", "tcmatch\tcmatch.vcxproj", "{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Debug|x64.ActiveCfg = Debug|x64
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Debug|x64.Build.0 = Debug|x64
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Debug|x86.ActiveCfg = Debug|Win32
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Debug|x86.Build.0 = Debug|Win32
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Release|x64.ActiveCfg = Release|x64
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Release|x64.Build.0 = Release|x64
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Release|x86.ActiveCfg = Release|Win32
+		{7D300EE9-7EA2-E4E8-5727-8A80CDCFC670}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8AAA5FD-35EA-4078-9B46-E4C28E447D4B}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,1478 @@
+<ui:FluentWindow x:Class="tcmatch.Core.ConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+
+        xmlns:local="clr-namespace:tcmatch.Core;assembly=tcmatch.Core"
+        d:DataContext="{d:DesignInstance Type=local:Config, IsDesignTimeCreatable=False}"
+
+
+
+        Title="{Binding L[001_001_001]}" d:Title="QuickSearch eXtended 2 - Configuration"
+        Height="850" d:Height="6000" Width="950" MinWidth="600" MinHeight="500"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip" Closing="Window_Closing" Closed="Window_Closed">
+    
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Light" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+            <local:WdxPluginFieldsConverter x:Key="WdxPluginFieldsConverter"/>
+            <local:LocalizationConverter x:Key="LocalizationConverter"/>
+
+            <!-- TabItem -->
+            <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                <Setter Property="HeaderTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="{Binding RelativeSource={RelativeSource AncestorType=TabItem}, Path=Tag}" FontSize="24" Margin="0,0,8,0" VerticalAlignment="Center"/>
+
+                                <TextBlock Text="{Binding}" FontSize="22" Margin="0,-2,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+
+            <!-- Header -->
+            <Style x:Key="HeaderStyle" TargetType="Border">
+                <Setter Property="Padding" Value="0,0,0,10"/>
+                <Setter Property="Margin" Value="0,22,0,10"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="BorderBrush" Value="{Binding B[01_02_02], FallbackValue='#f43f5e'}"/>
+                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+
+                <Setter Property="TextBlock.FontWeight" Value="SemiBold"/>
+                <Setter Property="TextBlock.FontSize" Value="22"/>
+                <Setter Property="TextBlock.Foreground" Value="{Binding B[01_02_01], FallbackValue='#1d4ed8'}"/>
+                <Style.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
+
+            <Style x:Key="SettingGridStyle" TargetType="Grid">
+                <Setter Property="Margin" Value="0,4,0,4"/>
+            </Style>
+
+            <Style x:Key="SettingNameStyle" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="TextAlignment" Value="Right"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,0,15,0"/>
+            </Style>
+
+
+            <!-- Info Banner -->
+            <Style x:Key="InfoBannerStyle" TargetType="HeaderedContentControl">
+                <Setter Property="Background" Value="{Binding B[02_01_01], FallbackValue='#dbeafe'}"/>
+                <Setter Property="Foreground" Value="{Binding B[02_01_02], FallbackValue='#172554'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[02_01_03], FallbackValue='#60a5fa'}"/>
+                <Setter Property="BorderThickness" Value="5,0,0,0"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="0,5,0,15"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="HeaderedContentControl">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" CornerRadius="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ui:SymbolIcon Grid.Column="0" Symbol="Info24" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=HeaderedContentControl}}"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
+            <!-- Warning Banner -->
+            <Style x:Key="WarningBannerStyle" TargetType="HeaderedContentControl">
+                <Setter Property="Background" Value="{Binding B[02_02_01], FallbackValue='#fef3c7'}"/>
+                <Setter Property="Foreground" Value="{Binding B[02_02_02], FallbackValue='#451a03'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[02_02_03], FallbackValue='#fbbf24'}"/>
+                <Setter Property="BorderThickness" Value="5,0,0,0"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="0,5,0,15"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="HeaderedContentControl">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" CornerRadius="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ui:SymbolIcon Grid.Column="0" Symbol="Warning24" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=HeaderedContentControl}}"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
+            <!-- Error Banner -->
+            <Style x:Key="ErrorBannerStyle" TargetType="HeaderedContentControl">
+                <Setter Property="Background" Value="{Binding B[02_03_01], FallbackValue='#ffe4e6'}"/>
+                <Setter Property="Foreground" Value="{Binding B[02_03_02], FallbackValue='#4c0519'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[02_03_03], FallbackValue='#fb7185'}"/>
+                <Setter Property="BorderThickness" Value="5,0,0,0"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="0,5,0,15"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="HeaderedContentControl">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" CornerRadius="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ui:SymbolIcon Grid.Column="0" Symbol="DismissCircle24" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=HeaderedContentControl}}"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
+
+            <!-- Primary Button -->
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="16,6,16,6"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[03_01_01], FallbackValue='#f9fafb'}"/>
+                <Setter Property="Foreground" Value="{Binding B[03_01_02], FallbackValue='#0ea5e9'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[03_01_03], FallbackValue='#0ea5e9'}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="5" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[03_01_04], FallbackValue='#0ea5e9'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[03_01_05], FallbackValue='#f9fafb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[03_01_06], FallbackValue='#0ea5e9'}"/>
+                    </Trigger>
+
+                    <!-- Pressed -->
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Background" Value="{Binding B[03_01_07], FallbackValue='#0284c7'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[03_01_08], FallbackValue='#f9fafb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[03_01_09], FallbackValue='#0284c7'}"/>
+                    </Trigger>
+
+                    <!-- Disabled -->
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Cursor" Value="Arrow"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Danger Button -->
+            <Style x:Key="DangerButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="16,6,16,6"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+
+                <!-- Standard -->
+                <Setter Property="Background" Value="{Binding B[03_02_01], FallbackValue='#f9fafb'}"/>
+                <Setter Property="Foreground" Value="{Binding B[03_02_02], FallbackValue='#f43f5e'}"/>
+                <Setter Property="BorderBrush" Value="{Binding B[03_02_03], FallbackValue='#f43f5e'}"/>
+                <Setter Property="BorderThickness" Value="2"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="5" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" UseLayoutRounding="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+                    <!-- Hovered -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding B[03_02_04], FallbackValue='#f43f5e'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[03_02_05], FallbackValue='#f9fafb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[03_02_06], FallbackValue='#f43f5e'}"/>
+                    </Trigger>
+
+                    <!-- Pressed -->
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Background" Value="{Binding B[03_02_07], FallbackValue='#e11d48'}"/>
+                        <Setter Property="Foreground" Value="{Binding B[03_02_08], FallbackValue='#f9fafb'}"/>
+                        <Setter Property="BorderBrush" Value="{Binding B[03_02_09], FallbackValue='#e11d48'}"/>
+                    </Trigger>
+
+                    <!-- Disabled -->
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Cursor" Value="Arrow"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            
+
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="{Binding L[001_001_001]}" d:Title="QuickSearch eXtended 2 - Configuration" />
+
+        <Grid Grid.Row="1" Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TabControl Grid.Row="0" SelectionChanged="TabControl_SelectionChanged">
+                
+                <TabItem Header="{Binding L[002_001_001]}" d:Header="Settings" Tag="Settings24" Name="TabItemSettings" IsSelected="True">
+                    <ScrollViewer Name="SettingsScrollViewer" VerticalScrollBarVisibility="Auto" Padding="15,5,25,15">
+                        <StackPanel>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}" Margin="0,10,0,10">
+                                <TextBlock Text="{Binding L[002_002_001]}" d:Text="Language"/>
+                            </Border>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_002_002]}" d:Text="UI language:" Style="{StaticResource SettingNameStyle}"/>
+                                <ComboBox Grid.Column="1" SelectedValue="{Binding language}" SelectedValuePath="Tag" SelectionChanged="Config_Language_SelectionChanged">
+                                    <ComboBoxItem Content="English" Tag="{x:Static local:Language.English}"/>
+                                    <ComboBoxItem Content="German - Deutsch" Tag="{x:Static local:Language.German}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_002_003]}" d:Text="Custom text adjustments (Editing in an external editor recommended):" Style="{StaticResource SettingNameStyle}" />
+
+                                <ScrollViewer Grid.Column="1" Height="102" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="Disable_MouseWheel">
+                                    <TextBox Text="{Binding customTranslationOverride}" AcceptsReturn="True" TextWrapping="Wrap" FontFamily="Consolas" LostFocus="Config_Language_Changed"/>
+                                </ScrollViewer>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="1" Content="{Binding L[002_002_004]}" d:Content="Load template from current language" HorizontalAlignment="Right" Click="LoadTranslationTemplate_Click" />
+                            </Grid>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}" >
+                                <TextBlock Text="{Binding L[002_002_005]}" d:Text="Here you can specifically change individual texts used within the application using the &quot;ID=Text&quot; format or create a completely new language. Feel free to submit complete translations via the GitHub project!"/>
+                            </HeaderedContentControl>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_002_100]}" d:Text="Appearance"/>
+                            </Border>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_002_101]}" d:Text="UI theme:" Style="{StaticResource SettingNameStyle}"/>
+                                <ComboBox Grid.Column="1" SelectedValue="{Binding theme}" SelectedValuePath="Tag" SelectionChanged="Config_Theme_SelectionChanged">
+                                    <ComboBoxItem Content="{Binding L[002_002_201]}" d:Content="Light" Tag="{x:Static local:Theme.Light}"/>
+                                    <ComboBoxItem Content="{Binding L[002_002_202]}" d:Content="Dark" Tag="{x:Static local:Theme.Dark}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_002_102]}" d:Text="Custom color adjustments (Editing in an external editor recommended):" Style="{StaticResource SettingNameStyle}" />
+
+                                <ScrollViewer Grid.Column="1" Height="102" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="Disable_MouseWheel">
+                                    <TextBox Text="{Binding customColorOverride}" AcceptsReturn="True" TextWrapping="Wrap" FontFamily="Consolas" LostFocus="Config_Theme_Changed"/>
+                                </ScrollViewer>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="1" Content="{Binding L[002_002_103]}" d:Content="Load template from current theme" HorizontalAlignment="Right" Click="LoadThemeTemplate_Click"/>
+                            </Grid>
+                            
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_002_105]}" d:Text="Show expert settings in various sections:" Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding showExpertSettings}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_003_001]}" d:Text="Search Assistant Window"/>
+                            </Border>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_003_002]}" d:Text="Show Search Assistant when opening the Total Commander search window:" Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding showGui}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <HeaderedContentControl Style="{StaticResource WarningBannerStyle}">
+                                <TextBlock Text="{Binding L[002_003_003]}" d:Text="If the Search Assistant is disabled, it can only be reopened by entering &quot;@gui&quot; into the Total Commander search window."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_003_004]}" d:Text="Keep Search Assistant open after closing the Total Commander search window:" Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding pinGui}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_003_005]}" d:Text="Anchor point for window position:" Style="{StaticResource SettingNameStyle}"/>
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ComboBox Grid.Column="0" SelectedValue="{Binding guiDocking}" SelectedValuePath="Tag" SelectionChanged="Config_Gui_SelectionChanged">
+                                        <ComboBoxItem Content="{Binding L[002_003_006]}" d:Content="Desktop Screen" Tag="{x:Static local:GuiDockingTarget.DesktopScreen}"/>
+                                        <ComboBoxItem Content="{Binding L[002_003_007]}" d:Content="Total Commander main window" Tag="{x:Static local:GuiDockingTarget.TotalCommanderMainWindow}"/>
+                                        <ComboBoxItem Content="{Binding L[002_003_008]}" d:Content="Total Commander search window" Tag="{x:Static local:GuiDockingTarget.TotalCommanderSearchWindow}"/>
+                                    </ComboBox>
+
+                                    <ComboBox Grid.Column="2" SelectedValue="{Binding guiDockingCorner}" SelectedValuePath="Tag" SelectionChanged="Config_Gui_SelectionChanged">
+                                        <ComboBoxItem Content="{Binding L[002_003_009]}" d:Content="Top-Left corner" Tag="{x:Static local:GuiDockingCorner.TopLeft}"/>
+                                        <ComboBoxItem Content="{Binding L[002_003_010]}" d:Content="Top-Right corner" Tag="{x:Static local:GuiDockingCorner.TopRight}"/>
+                                        <ComboBoxItem Content="{Binding L[002_003_011]}" d:Content="Bottom-Left corner" Tag="{x:Static local:GuiDockingCorner.BottomLeft}"/>
+                                        <ComboBoxItem Content="{Binding L[002_003_012]}" d:Content="Bottom-Right corner" Tag="{x:Static local:GuiDockingCorner.BottomRight}"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_003_013]}" d:Text="Pixel offset from anchor point (X / Y):" Style="{StaticResource SettingNameStyle}"/>
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:NumberBox Grid.Column="0" Icon="{ui:SymbolIcon PaddingRight24}" Value="{Binding guiOffsetX, UpdateSourceTrigger=PropertyChanged}" MaxDecimalPlaces="0" SmallChange="1" LargeChange="10" ValidationMode="Disabled" ValueChanged="Config_Gui_ValueChanged" LostFocus="Config_Gui_LostFocus"/>
+                                    <ui:NumberBox Grid.Column="2" Icon="{ui:SymbolIcon PaddingDown24}" Value="{Binding guiOffsetY, UpdateSourceTrigger=PropertyChanged}" MaxDecimalPlaces="0" SmallChange="1" LargeChange="10" ValidationMode="Disabled" ValueChanged="Config_Gui_ValueChanged" LostFocus="Config_Gui_LostFocus"/>
+                                </Grid>
+                            </Grid>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}">
+                                <TextBlock Text="{Binding L[002_003_014]}" d:Text="Negative values move the window left/up, positive values right/down."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_003_015]}" d:Text="Window size (Width / Height):" Style="{StaticResource SettingNameStyle}"/>
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:NumberBox Grid.Column="0" Icon="{ui:SymbolIcon ArrowAutofitWidth24}" Value="{Binding guiSizeX, UpdateSourceTrigger=PropertyChanged}" MaxDecimalPlaces="0" SmallChange="1" LargeChange="10" ValidationMode="Disabled" ValueChanged="Config_Gui_ValueChanged" LostFocus="Config_Gui_LostFocus"/>
+                                    <ui:NumberBox Grid.Column="2" Icon="{ui:SymbolIcon ArrowAutofitHeight24}" Value="{Binding guiSizeY, UpdateSourceTrigger=PropertyChanged}" MaxDecimalPlaces="0" SmallChange="1" LargeChange="10" ValidationMode="Disabled" ValueChanged="Config_Gui_ValueChanged" LostFocus="Config_Gui_LostFocus"/>
+                                </Grid>
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_004_001]}" d:Text="Content and order of the Search Assistant"/>
+                            </Border>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}" Margin="0,5,0,5">
+                                <TextBlock Text="{Binding L[002_004_002]}" d:Text="Specify which sections are displayed in the Search Assistant and whether they are expanded or collapsed by default. The order can be adjusted using the buttons. The Search Assistant window can be scrolled using the mouse wheel if needed. Hover over buttons for helpful tooltips."/>
+                            </HeaderedContentControl>
+
+                            <ui:DataGrid x:Name="GuiSectionsGrid"
+                                ItemsSource="{Binding guiSections}"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                CanUserSortColumns="False"
+                                HeadersVisibility="Column"
+                                Height="Auto"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                PreviewMouseWheel="Disable_MouseWheel">
+
+                                <ui:DataGrid.Columns>
+                                    <DataGridTemplateColumn Width="*">
+                                        <DataGridTemplateColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_004_030], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Section"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock VerticalAlignment="Center" Margin="8,0,0,0" TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource LocalizationConverter}">
+                                                            <Binding Path="labelId"/>
+                                                            <Binding Path="DataContext.L" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <DataGridTemplateColumn Width="130">
+                                        <DataGridTemplateColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_004_031], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Display State"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectedValue="{Binding guiSectionDisplayState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag">
+                                                    <ComboBoxItem Content="{Binding DataContext.L[002_004_040], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Content="Disabled" Tag="{x:Static local:GuiSectionDisplayState.Hidden}"/>
+                                                    <ComboBoxItem Content="{Binding DataContext.L[002_004_041], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Content="Collapsed" Tag="{x:Static local:GuiSectionDisplayState.Collapsed}"/>
+                                                    <ComboBoxItem Content="{Binding DataContext.L[002_004_042], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Content="Expanded" Tag="{x:Static local:GuiSectionDisplayState.Expanded}"/>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </ui:DataGrid.Columns>
+                            </ui:DataGrid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="1" Content="{Binding L[002_004_032]}" d:Content="Move up" Margin="8,0,0,0" Click="GuiSections_MoveUp_Click" />
+                                <Button Grid.Column="2" Content="{Binding L[002_004_033]}" d:Content="Move down" Margin="8,0,0,0" Click="GuiSections_MoveDown_Click" />
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_004_050]}" d:Text="Use full search structure (also shows default values for search mode and metadata shortcuts if the &quot;Search structure&quot; section is active)" Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding guiUseFullSearchQueryPlan}" Unchecked="Config_Gui_Changed" Checked="Config_Gui_Changed"/>
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_005_001]}" d:Text="Search Control Characters"/>
+                            </Border>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}" Margin="0,5,0,5">
+                                <TextBlock Text="{Binding L[002_005_002]}" d:Text="Disabled search characters lose their control function. A search can then use these characters directly as normal text without escaping them with a backslash (\)."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_003]}" d:Text="Character for global OR operator (|):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewOrCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewOrCharUsed}" Text="{Binding viewOrChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_004]}" d:Text="Character for AND operator (space):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewAndCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewAndCharUsed}" Text="{Binding viewAndChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_005]}" d:Text="Character for negation (!):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewNotCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewNotCharUsed}" Text="{Binding viewNotChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_006]}" d:Text="Character to toggle case sensitivity (~):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewInvertCaseCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewInvertCaseCharUsed}" Text="{Binding viewInvertCaseChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_007]}" d:Text="Character to force match at start of text (^):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewStartAnchorCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewStartAnchorCharUsed}" Text="{Binding viewStartAnchorChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_008]}" d:Text="Character to force match at end of text ($):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewEndAnchorCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewEndAnchorCharUsed}" Text="{Binding viewEndAnchorChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_009]}" d:Text="Character for local OR operator (/):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewLocalOrCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewLocalOrCharUsed}" Text="{Binding viewLocalOrChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_010]}" d:Text="Character for metadata (@):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewMetadataCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewMetadataCharUsed}" Text="{Binding viewMetadataChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_011]}" d:Text="Character for escaping (\):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewEscapeCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewEscapeCharUsed}" Text="{Binding viewEscapeChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_013]}" d:Text="Character for quoting (&quot;):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewQuoteCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewQuoteCharUsed}" Text="{Binding viewQuoteChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_005_012]}" d:Text="Decimal separator (for &quot;@age&quot; and &quot;@size&quot;):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewDecimalSeparatorCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewDecimalSeparatorCharUsed}" Text="{Binding viewDecimalSeparatorChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_006_001]}" d:Text="Search Mode Characters"/>
+                            </Border>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_006_002]}" d:Text="Character for standard search (=):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewStandardModeCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewStandardModeCharUsed}" Text="{Binding viewStandardModeChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_006_003]}" d:Text="Character for regex search (Regular expression) (?):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewRegexModeCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewRegexModeCharUsed}" Text="{Binding viewRegexModeChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_006_006]}" d:Text="Character for pattern search (%):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewPatternModeCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewPatternModeCharUsed}" Text="{Binding viewPatternModeChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_006_004]}" d:Text="Character for fuzzy search (Approximate match) (&lt;):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewFuzzyModeCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewFuzzyModeCharUsed}" Text="{Binding viewFuzzyModeChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_006_005]}" d:Text="Character for sequence search (*):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding viewSequenceModeCharUsed}" Unchecked="Config_Validate_Changed" Checked="Config_Validate_Changed"/>
+                                    <TextBox Width="40" MaxLength="1" IsEnabled="{Binding viewSequenceModeCharUsed}" Text="{Binding viewSequenceModeChar}" LostFocus="Config_Validate_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_007_001]}" d:Text="Search Behavior"/>
+                            </Border>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_002]}" d:Text="Default search mode:" Style="{StaticResource SettingNameStyle}"/>
+                                <ComboBox Grid.Column="1" SelectedValue="{Binding defaultSearchMode}" SelectedValuePath="Tag" SelectionChanged="Config_SelectionChanged">
+                                    <ComboBoxItem Content="{Binding L[002_007_003]}" d:Content="Standard search (=)" Tag="{x:Static local:SearchMode.Standard}"/>
+                                    <ComboBoxItem Content="{Binding L[002_007_004]}" d:Content="Regex search (Regular expression) (?)" Tag="{x:Static local:SearchMode.Regex}"/>
+                                    <ComboBoxItem Content="{Binding L[002_007_021]}" d:Content="Pattern search (%)" Tag="{x:Static local:SearchMode.Pattern}"/>
+                                    <ComboBoxItem Content="{Binding L[002_007_005]}" d:Content="Fuzzy search (Approximate match) (&lt;)" Tag="{x:Static local:SearchMode.Fuzzy}"/>
+                                    <ComboBoxItem Content="{Binding L[002_007_006]}" d:Content="Sequence search (*)" Tag="{x:Static local:SearchMode.Sequence}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_007]}" d:Text="Case sensitive by default:" Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding caseSensitive}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_022]}" d:Text="The anchors ^ and $ match not only at the start/end of the filename, but also at word boundaries (the following delimiters define a word):" Style="{StaticResource SettingNameStyle}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <CheckBox Margin="0,0,8,0" VerticalAlignment="Center" IsChecked="{Binding enableWordBoundariesForAnchors}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                                    <TextBox Width="200" VerticalAlignment="Center" IsEnabled="{Binding enableWordBoundariesForAnchors}" Text="{Binding wordBoundaryDelimiters}" LostFocus="Config_Changed"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_019]}" d:Text="Force match at start of text or word (^) for the first search term by default:" Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding matchFirstTermAsStartAnchor}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+                            
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}">
+                                <TextBlock Text="{Binding L[002_007_020]}" d:Text="When enabled, the very first search term in the first search branch must appear directly at the beginning of the item name (as if prefixed with &quot;^&quot;). An explicit &quot;^&quot; inverts this behavior for that term."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_008]}" d:Text="Fuzzy search – 1 typo allowed from this text length:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding levenshteinThreshold1}" Width="80" HorizontalAlignment="Left" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_009]}" d:Text="Fuzzy search – 2 typos allowed from this text length:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding levenshteinThreshold2}" Width="80" HorizontalAlignment="Left" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_010]}" d:Text="Fuzzy search – 3 typos allowed from this text length:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding levenshteinThreshold3}" Width="80" HorizontalAlignment="Left" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_011]}" d:Text="Abort search via key:" Style="{StaticResource SettingNameStyle}"/>
+                                <ComboBox Grid.Column="1" SelectedValue="{Binding abortKeyStrategy}" SelectedValuePath="Tag" SelectionChanged="Config_SelectionChanged">
+                                    <ComboBoxItem Content="{Binding L[002_007_012]}" d:Content="Disabled" Tag="{x:Static local:AbortKeyStrategy.Disabled}"/>
+                                    <ComboBoxItem Content="{Binding L[002_007_013]}" d:Content="ESC key (closes Quick Search)" Tag="{x:Static local:AbortKeyStrategy.EscapeOnly}"/>
+                                    <ComboBoxItem Content="{Binding L[002_007_014]}" d:Content="PAUSE key (keeps Quick Search open)" Tag="{x:Static local:AbortKeyStrategy.PauseOnly}"/>
+                                    <ComboBoxItem Content="{Binding L[002_007_015]}" d:Content="ESC and PAUSE keys (both active)" Tag="{x:Static local:AbortKeyStrategy.Both}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}">
+                                <TextBlock Text="{Binding L[002_007_016]}" d:Text="To stop a long-running content search, the selected key must be held down longer. The PAUSE key has the advantage that the Quick Search box remains open with your search text."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_007_017]}" d:Text="Forces Total Commander to continue transmitting the search filter, even if intermediate states (like an incomplete regular expression) temporarily lead to 0 matches:" Style="{StaticResource SettingNameStyle}" TextWrapping="Wrap"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding allowEmptyResult}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <HeaderedContentControl Style="{StaticResource ErrorBannerStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="{Binding L[002_007_018]}" d:Text="Only disable this option if you fully understand what you are doing! May cause unexpected side effects. Requires a restart of Total Commander."/>
+                            </HeaderedContentControl>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_008_001]}" d:Text="Metadata"/>
+                            </Border>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}" Margin="0,5,0,5">
+                                <TextBlock Text="{Binding L[002_008_002]}" d:Text="Here you can define custom aliases (e.g., &quot;@größe&quot; instead of &quot;@size&quot; or short &quot;@c&quot; instead of &quot;@content&quot;) to adapt the search to your own language or personal preferences."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_003]}" d:Text="Custom alias for &quot;@gui&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasGui}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_004]}" d:Text="Custom alias for &quot;@name&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasName}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_005]}" d:Text="Custom alias for &quot;@ext&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasExt}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_006]}" d:Text="Custom alias for &quot;@folder&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasFolder}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_007]}" d:Text="Custom alias for &quot;@path&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasPath}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_012]}" d:Text="Custom alias for &quot;@attr&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasAttr}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_008]}" d:Text="Custom alias for &quot;@desc&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasDesc}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_009]}" d:Text="Custom alias for &quot;@content&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasContent}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_010]}" d:Text="Custom alias for &quot;@age&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasAge}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_011]}" d:Text="Custom alias for &quot;@size&quot;:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding metadataAliasSize}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_008_101]}" d:Text="Define additional metadata via content plugins (WDX)"/>
+                            </Border>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}">
+                                <TextBlock Text="{Binding L[002_008_102]}" d:Text="Here you can register fields from external Total Commander plugins as custom metadata aliases. For example, if the &quot;Title&quot; field from the &quot;ShellDetails.wdx&quot; plugin is assigned the shortcut &quot;mp3&quot;, you can filter by it in the search using &quot;@mp3 searchterm&quot;. If multiple fields (e.g. also &quot;Artist&quot;) are assigned to the same &quot;mp3&quot; shortcut, the engine searches all of these text fields simultaneously." TextWrapping="Wrap"/>
+                            </HeaderedContentControl>
+
+                            <ui:DataGrid x:Name="WdxDefinitionsGrid"
+                                ItemsSource="{Binding wdxDefinitions}"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                CanUserSortColumns="False"
+                                HeadersVisibility="Column"
+                                Height="Auto"
+                                MinHeight="159"
+                                MaxHeight="241" 
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                PreviewMouseWheel="Disable_MouseWheel" CellEditEnding="Config_Validate_CellEditEndingChanged" RowEditEnding="Config_Validate_RowEditEndingChanged" LostFocus="Config_Validate_Changed">
+
+                                <ui:DataGrid.Columns>
+                                    <DataGridCheckBoxColumn Binding="{Binding isActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="1*" MaxWidth="70">
+                                        <DataGridCheckBoxColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_008_103], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Active"/>
+                                            </DataTemplate>
+                                        </DataGridCheckBoxColumn.HeaderTemplate>
+                                    </DataGridCheckBoxColumn>
+
+                                    <DataGridTextColumn Binding="{Binding metadataAlias, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="1*" MaxWidth="150">
+                                        <DataGridTextColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_008_104], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Metadata alias"/>
+                                            </DataTemplate>
+                                        </DataGridTextColumn.HeaderTemplate>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Binding="{Binding pluginBitness, Mode=OneWay}" IsReadOnly="True" Width="1*" MaxWidth="110">
+                                        <DataGridTextColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_008_105], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Architecture"/>
+                                            </DataTemplate>
+                                        </DataGridTextColumn.HeaderTemplate>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Binding="{Binding pluginPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="3*">
+                                        <DataGridTextColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_008_106], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Plugin path"/>
+                                            </DataTemplate>
+                                        </DataGridTextColumn.HeaderTemplate>
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="ToolTip" Value="{Binding pluginPath}"/>
+                                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Binding="{Binding pluginIniPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="2*">
+                                        <DataGridTextColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_008_107], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="INI path"/>
+                                            </DataTemplate>
+                                        </DataGridTextColumn.HeaderTemplate>
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="ToolTip" Value="{Binding pluginIniPath}"/>
+                                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTemplateColumn Width="3*">
+                                        <DataGridTemplateColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_008_108], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Fieldname &amp; Unit"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectedItem="{Binding fieldAndUnit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                    <ComboBox.ItemsSource>
+                                                        <MultiBinding Converter="{StaticResource WdxPluginFieldsConverter}">
+                                                            <Binding Path="pluginPath" UpdateSourceTrigger="PropertyChanged"/>
+                                                            <Binding Path="pluginIniPath" UpdateSourceTrigger="PropertyChanged"/>
+                                                            <Binding Path="is64Bit" UpdateSourceTrigger="PropertyChanged"/>
+                                                            <Binding Path="isActive" UpdateSourceTrigger="PropertyChanged"/>
+                                                            <Binding Path="oldFieldAndUnit" UpdateSourceTrigger="PropertyChanged"/>
+                                                        </MultiBinding>
+                                                    </ComboBox.ItemsSource>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </ui:DataGrid.Columns>
+                            </ui:DataGrid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="1" Content="{Binding L[002_008_109]}" d:Content="Move up" Margin="8,0,0,0" Click="Wdx_Definitions_MoveUp_Click" />
+                                <Button Grid.Column="2" Content="{Binding L[002_008_110]}" d:Content="Move down" Margin="8,0,0,0" Click="Wdx_Definitions_MoveDown_Click" />
+                                <Button Grid.Column="3" Content="{Binding L[002_008_111]}" d:Content="Add definition" Margin="8,0,0,0" Click="Wdx_Definitions_AddDefinition_Click" Style="{StaticResource PrimaryButtonStyle}" />
+                                <Button Grid.Column="4" Content="{Binding L[002_008_112]}" d:Content="Remove definition" Margin="8,0,0,0" Click="Wdx_Definitions_RemoveDefinition_Click" Style="{StaticResource DangerButtonStyle}" />
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_008_200]}" d:Text="Default metadata aliases per source view"/>
+                            </Border>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}" Margin="0,5,0,5">
+                                <TextBlock Text="{Binding L[002_008_201]}" d:Text="Usually you want to filter by file name. When searching the history or tab paths, it can be useful to search the entire path directly. Here you can configure the metadata alias used by default for each view. Of course, the active alias can still be overridden in the search string using &quot;@name&quot;, &quot;@path&quot;, or other aliases."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_202]}" d:Text="File panel (focus file panel → Ctrl+S):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding defaultMetadataAliasFileList}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_203]}" d:Text="Search results (Find Files → Feed to listbox → Ctrl+S):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding defaultMetadataAliasSearchResults}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_204]}" d:Text="Synchronize directories (Commands → Synchronize Dirs → start typing):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding defaultMetadataAliasSynchronize}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}">
+                                <TextBlock Text="{Binding L[002_008_205]}" d:Text="In the &quot;Synchronize directories&quot; window, Total Commander only provides a highlight search. Non-matching entries are not hidden; instead, you can navigate between matches using the Up/Down arrow keys." TextWrapping="Wrap"/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_206]}" d:Text="Directory history (Alt+Down arrow → Ctrl+S):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding defaultMetadataAliasHistory}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_207]}" d:Text="Tab titles (Ctrl+Shift+A → start typing):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding defaultMetadataAliasTabTitles}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_008_208]}" d:Text="Tab paths (Ctrl+Shift+A → type &quot;*&quot;):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding defaultMetadataAliasTabPaths}" LostFocus="Config_Validate_Changed"/>
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_009_001]}" d:Text="Text Replacements"/>
+                            </Border>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}" Margin="0,5,0,5">
+                                <TextBlock Text="{Binding L[002_009_017]}" d:Text="Most text replacements (PinYin search, Hangul search, ignore accents/diacritics, and 1:1 mappings) are not supported in Regex and Pattern search."/>
+                            </HeaderedContentControl>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_009_016]}" d:Text="Ignore accents / diacritics (e.g. 'a' matches 'ä', 'á', 'à', 'â')::" Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding ignoreAccents}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_009_002]}" d:Text="Enable PinYin search (Chinese, e.g. 'ys' matches '耶稣'):" Style="{StaticResource SettingNameStyle}" TextWrapping="Wrap"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding usePinYinMatching}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_009_003]}" d:Text="Enable Hangul search (Korean, e.g. 'ㅇㅅ' matches '예수'):" Style="{StaticResource SettingNameStyle}" TextWrapping="Wrap"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding useKoreanMatching}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <HeaderedContentControl Style="{StaticResource InfoBannerStyle}" Margin="0,15,0,15">
+                                <TextBlock Text="{Binding L[002_009_004]}" d:Text="Please consult the help file for details on the 4 application scopes. Advanced mass replacement rules can also be defined via the {0} file."/>
+                            </HeaderedContentControl>
+
+                            <ui:DataGrid x:Name="ReplacementsGrid"
+                                ItemsSource="{Binding stringReplacementsGui}"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                CanUserSortColumns="False"
+                                HeadersVisibility="Column"
+                                Height="Auto"
+                                MinHeight="159"
+                                MaxHeight="241" 
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                PreviewMouseWheel="Disable_MouseWheel" CellEditEnding="Config_Validate_CellEditEndingChanged" RowEditEnding="Config_Validate_RowEditEndingChanged" LostFocus="Config_Validate_Changed">
+
+                                <ui:DataGrid.Columns>
+                                    <DataGridTemplateColumn Width="*">
+                                        <DataGridTemplateColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_009_005], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Application Scope"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectedValue="{Binding scope, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag">
+                                                    <ComboBoxItem Content="{Binding DataContext.L[002_009_012], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Content="1 - Search query only" Tag="{x:Static local:RuleScope.Filter}"/>
+                                                    <ComboBoxItem Content="{Binding DataContext.L[002_009_013], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Content="2 - Elementname only (File/Folder)" Tag="{x:Static local:RuleScope.ElementName}"/>
+                                                    <ComboBoxItem Content="{Binding DataContext.L[002_009_014], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Content="3 - Both (Search query and Elementname)" Tag="{x:Static local:RuleScope.Both}"/>
+                                                    <ComboBoxItem Content="{Binding DataContext.L[002_009_015], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Content="4 - 1:1 Mapping" Tag="{x:Static local:RuleScope.MatchOnly}"/>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <DataGridTextColumn Binding="{Binding searchFor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*">
+                                        <DataGridTextColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_009_006], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Search for"/>
+                                            </DataTemplate>
+                                        </DataGridTextColumn.HeaderTemplate>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Binding="{Binding replaceWith, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*">
+                                        <DataGridTextColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DataContext.L[002_009_007], RelativeSource={RelativeSource AncestorType=DataGrid}}" d:Text="Replace with"/>
+                                            </DataTemplate>
+                                        </DataGridTextColumn.HeaderTemplate>
+                                    </DataGridTextColumn>
+                                </ui:DataGrid.Columns>
+                            </ui:DataGrid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="1" Content="{Binding L[002_009_008]}" d:Content="Move up" Margin="8,0,0,0" Click="String_Replacements_MoveUp_Click" />
+                                <Button Grid.Column="2" Content="{Binding L[002_009_009]}" d:Content="Move down" Margin="8,0,0,0" Click="String_Replacements_MoveDown_Click" />
+                                <Button Grid.Column="3" Content="{Binding L[002_009_010]}" d:Content="Add rule" Margin="8,0,0,0" Click="String_Replacements_AddRule_Click" Style="{StaticResource PrimaryButtonStyle}" />
+                                <Button Grid.Column="4" Content="{Binding L[002_009_011]}" d:Content="Remove rule" Margin="8,0,0,0" Click="String_Replacements_RemoveRule_Click" Style="{StaticResource DangerButtonStyle}" />
+                            </Grid>
+
+
+
+                            <Border Style="{StaticResource HeaderStyle}">
+                                <TextBlock Text="{Binding L[002_010_001]}" d:Text="Performance, Caching &amp; Diagnostics"/>
+                            </Border>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_010_002]}" d:Text="Internal logging verbosity (Log level):" Style="{StaticResource SettingNameStyle}"/>
+                                <ComboBox Grid.Column="1" SelectedValue="{Binding loggingLevel}" SelectedValuePath="Tag" SelectionChanged="Config_Validate_SelectionChanged">
+                                    <ComboBoxItem Content="{Binding L[002_010_003]}" d:Content="Level 0 - No logging" Tag="{x:Static local:LoggingLevel.Level_0_None}"/>
+                                    <ComboBoxItem Content="{Binding L[002_010_004]}" d:Content="Level 1 - Errors only" Tag="{x:Static local:LoggingLevel.Level_1_Errors}"/>
+                                    <ComboBoxItem Content="{Binding L[002_010_005]}" d:Content="Level 2 - Plugin initialization" Tag="{x:Static local:LoggingLevel.Level_2_Startup}"/>
+                                    <ComboBoxItem Content="{Binding L[002_010_006]}" d:Content="Level 3 - Technical search execution plans" Tag="{x:Static local:LoggingLevel.Level_3_SearchQueryPlan}"/>
+                                    <ComboBoxItem Content="{Binding L[002_010_007]}" d:Content="Level 4 - Individual file scans" Tag="{x:Static local:LoggingLevel.Level_4_FileEvaluation}"/>
+                                    <ComboBoxItem Content="{Binding L[002_010_008]}" d:Content="Level 5 - Low-level engine diagnostics" Tag="{x:Static local:LoggingLevel.Level_5_Function_Calls}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_010_010]}" d:Text="Metadata Cache (File and folder information):" Style="{StaticResource SettingNameStyle}"/>
+                                <ComboBox Grid.Column="1" SelectedValue="{Binding metadataCacheStrategy}" SelectedValuePath="Tag" SelectionChanged="Config_Validate_SelectionChanged">
+                                    <ComboBoxItem Content="{Binding L[002_010_011]}" d:Content="Disabled (Reread data on every pass)" Tag="{x:Static local:CacheStrategy.Disabled}"/>
+                                    <ComboBoxItem Content="{Binding L[002_010_012]}" d:Content="Cache information of the last scanned directory only" Tag="{x:Static local:CacheStrategy.LastDirectoryOnly}"/>
+                                    <ComboBoxItem Content="{Binding L[002_010_013]}" d:Content="Use fixed limit for cache entries" Tag="{x:Static local:CacheStrategy.SpecificCount}"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_010_015]}" d:Text="Metadata Cache - Limit for cache entries:" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding maxMetadataObjectCacheCount}" LostFocus="Config_Validate_Changed" HorizontalAlignment="Left" Width="80" />
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_010_016]}" d:Text="Maximum file size for reading &quot;@content&quot; - larger files will be ignored (MB):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding maxMbToReadForContent}" LostFocus="Config_Validate_Changed" HorizontalAlignment="Left" Width="80"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_010_017]}" d:Text="Total memory for &quot;@content&quot; cache - older content will be discarded when limit is reached (MB):" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBox Grid.Column="1" Text="{Binding maxContentCacheMb}" LostFocus="Config_Validate_Changed" HorizontalAlignment="Left" Width="80"/>
+                            </Grid>
+
+
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+
+
+                <TabItem Header="{Binding L[003_001_001]}" d:Header="Documentation" Tag="BookSearch24" Name="TabItemDocumentation">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <HeaderedContentControl Grid.Row="0" Style="{StaticResource InfoBannerStyle}" Margin="0,0,0,0">
+                            <Grid>
+                                <TextBlock Text="{Binding viewDocumentationCurrentLanguage}" d:Text="Version &quot;German 2026-09-18&quot;" FontWeight="SemiBold"/>
+                                <Button Content="{Binding viewDocumentationToggleLanguage_NewLanguage}" d:Content="Show Version &quot;English 2026-09-18&quot;" Visibility="{Binding viewDocumentationToggleLanguage_Visibility}" HorizontalAlignment="Right" Click="DocumentationToggleLanguage_Click" Style="{StaticResource PrimaryButtonStyle}"/>
+                            </Grid>
+                        </HeaderedContentControl>
+
+                        <wv2:WebView2 Grid.Row="1" Name="DocWebView" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                    </Grid>
+                </TabItem>
+
+
+
+                <TabItem Header="{Binding L[004_001_001]}" d:Header="Log file" Tag="DocumentTextClock24" Name="TabItemLogFile">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <HeaderedContentControl Grid.Row="0" Style="{StaticResource InfoBannerStyle}" Margin="0,0,0,0">
+                            <Grid>
+                                <TextBlock Text="{Binding viewLogFileStatusText}" d:Text="Log file from 2026-07-05 17:30 (155 KB)" FontWeight="SemiBold"/>
+                                <Button Content="{Binding L[004_002_002]}" d:Content="Delete log file" Visibility="{Binding viewLogFileDelete_Visibility}" HorizontalAlignment="Right" Click="LogFileDelete_Click" Style="{StaticResource DangerButtonStyle}"/>
+                            </Grid>
+                        </HeaderedContentControl>
+
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <TextBox Text="{Binding viewLogFileContent}" IsReadOnly="True" Height="Auto" VerticalAlignment="Top" TextWrapping="NoWrap" FontFamily="Consolas" HorizontalAlignment="Stretch" Padding="5"/>
+                        </ScrollViewer>
+
+                    </Grid>
+                </TabItem>
+
+
+
+                <TabItem Header="{Binding L[005_001_001]}" d:Header="Personal Note" Tag="Person24" Name="TabItemPersonal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <HeaderedContentControl Grid.Row="0" Style="{StaticResource InfoBannerStyle}" Margin="0,0,0,0">
+                            <Grid>
+                                <TextBlock Text="{Binding viewPersonalCurrentLanguage}" d:Text="German" FontWeight="SemiBold"/>
+                                <Button Content="{Binding viewPersonalToggleLanguage_NewLanguage}" d:Content="Switch to &quot;English&quot;" Visibility="{Binding viewPersonalToggleLanguage_Visibility}" HorizontalAlignment="Right" Click="PersonalToggleLanguage_Click" Style="{StaticResource PrimaryButtonStyle}"/>
+                            </Grid>
+                        </HeaderedContentControl>
+
+                        <wv2:WebView2 Grid.Row="1" Name="PersonalWebView" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                    </Grid>
+                </TabItem>
+
+            </TabControl>
+
+            <Grid Grid.Row="1" Margin="0,8,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <HeaderedContentControl Grid.Row="0" Style="{StaticResource WarningBannerStyle}" Visibility="{Binding viewWarningBannerVisibility}" Margin="0,5,0,5">
+                    <TextBlock Text="{Binding viewWarningBannerText}"/>
+                </HeaderedContentControl>
+
+                <HeaderedContentControl Grid.Row="1" Style="{StaticResource ErrorBannerStyle}" Visibility="{Binding viewErrorBannerVisibility}" Margin="0,5,0,5">
+                    <TextBlock Text="{Binding viewErrorBannerText}"/>
+                </HeaderedContentControl>
+
+                <Grid Grid.Row="2" Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="{Binding L[001_002_001]}" d:Content="Defaults" Click="ResetDefaults_Click" />
+
+                    <Button Grid.Column="2" Content="{Binding L[001_002_002]}" d:Content="Cancel" Margin="0,0,8,0" Click="Cancel_Click" Style="{StaticResource DangerButtonStyle}" />
+
+                    <Button Grid.Column="3" Content="{Binding L[001_002_003]}" d:Content="Save &amp; Close" Click="SaveButton_Click" IsDefault="True" IsEnabled="{Binding isSaveEnabled}" Style="{StaticResource PrimaryButtonStyle}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>

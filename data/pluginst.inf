@@ -1,0 +1,6 @@
+[plugininstall]
+description=QuickSearch eXtended 2 for Total Commander (32/64-bit)
+descriptiondeu=QuickSearch eXtended 2 für den Total Commander (32/64-bit)
+type=prg
+file=QSX2\tcmatch.dll
+defaultdir=
