@@ -63,7 +63,7 @@ namespace tcmatch.Core
         public static string version = "2026-10-01"; // #RELEASE
 
         // Path to files and folders
-        public static string appFolder;             // e.g., C:\Total Commander\QSX2\
+        public static string pluginFolder;          // e.g., C:\Total Commander\QSX2\
                                                     //       C:\Total Commander\QSX2\tcmatch.dll
                                                     //       C:\Total Commander\QSX2\tcmatch64.dll
                                                     //       C:\Total Commander\QSX2\tcmatch.Core.dll
@@ -127,23 +127,23 @@ namespace tcmatch.Core
             Log(LoggingLevel.Level_2_Startup, $"║ {line2.PadRight(width)} ║");
             Log(LoggingLevel.Level_2_Startup, $"╚══╤═══════════════════════════════════════════╝");
             #endregion
-            #region 1. Establish the AppFolder (where the DLLs live)
+            #region 1. Establish the PluginFolder (where the DLLs live)
             string assemblyLocation = typeof(Plugin).Assembly.Location;
 
             if(!string.IsNullOrEmpty(assemblyLocation)) {
-                appFolder = Path.GetDirectoryName(assemblyLocation);
+                pluginFolder = Path.GetDirectoryName(assemblyLocation);
             } else {
-                appFolder = AppDomain.CurrentDomain.BaseDirectory;
+                pluginFolder = AppDomain.CurrentDomain.BaseDirectory;
             }
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-            Log(LoggingLevel.Level_2_Startup, $"   ├── AppFolder (DLL and Data location):".PadRight(60) + appFolder);
+            Log(LoggingLevel.Level_2_Startup, $"   ├── PluginFolder (DLL and Data location):".PadRight(60) + pluginFolder);
             #endregion
             #region 2.1 Default DataFolder (%appdata%\QSX2)
             dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QSX2");
             #endregion
-            #region 2.2 Check if "AppFolder\tcmatch.path.txt" exists and use the content to override the Default DataFolder
-            pathOverrideFilePath = Path.Combine(appFolder, "tcmatch.path.txt");
+            #region 2.2 Check if "PluginFolder\tcmatch.path.txt" exists and use the content to override the Default DataFolder
+            pathOverrideFilePath = Path.Combine(pluginFolder, "tcmatch.path.txt");
 
             if(File.Exists(pathOverrideFilePath)) {
                 Log(LoggingLevel.Level_2_Startup, $"   ├── Path override file found:".PadRight(60) + pathOverrideFilePath);
@@ -207,7 +207,7 @@ namespace tcmatch.Core
             config.OnPostLoad();
             #endregion
             #region 5. Read "tcmatch.pinyin.tbl" if needed
-            pinyinFilePath = Path.Combine(appFolder, "tcmatch.pinyin.tbl");
+            pinyinFilePath = Path.Combine(pluginFolder, "tcmatch.pinyin.tbl");
 
             // Initialize PinYin path and force early load if enabled in config
             LoadPinYinDatabase();
@@ -243,11 +243,11 @@ namespace tcmatch.Core
             string assemblyName = new AssemblyName(args.Name).Name;
 
             // 1. Try loading from the architecture-specific subfolder (x64 or x32)
-            string expectedPath = Path.Combine(appFolder, Environment.Is64BitProcess ? "x64" : "x32", assemblyName + ".dll");
+            string expectedPath = Path.Combine(pluginFolder, Environment.Is64BitProcess ? "x64" : "x32", assemblyName + ".dll");
             if(File.Exists(expectedPath)) return Assembly.LoadFrom(expectedPath);
 
             // 2. Fallback: Try loading directly from the main plugin directory
-            expectedPath = Path.Combine(appFolder, assemblyName + ".dll");
+            expectedPath = Path.Combine(pluginFolder, assemblyName + ".dll");
             if(File.Exists(expectedPath)) return Assembly.LoadFrom(expectedPath);
 
             return null;
@@ -255,13 +255,13 @@ namespace tcmatch.Core
         #endregion
         #region public static string ResolveFolderPath(string rawPath, string baseFolder = null)
         /// <summary>
-        /// Expands environment variables and resolves relative paths anchored against baseFolder (defaults to appFolder).
+        /// Expands environment variables and resolves relative paths anchored against baseFolder (defaults to pluginFolder).
         /// </summary>
         public static string ResolveFolderPath(string rawPath, string baseFolder = null)
         {
             if(string.IsNullOrWhiteSpace(rawPath)) return null;
 
-            if(string.IsNullOrEmpty(baseFolder)) baseFolder = appFolder;
+            if(string.IsNullOrEmpty(baseFolder)) baseFolder = pluginFolder;
 
             // 1. Expand environment variables (e.g. %COMMANDER_PATH%\Plugins, %APPDATA%\QSX2)
             string expanded = Environment.ExpandEnvironmentVariables(rawPath.Trim());
@@ -7242,7 +7242,7 @@ namespace tcmatch.Core
             }
 
             // 4. Load markup content and convert to HTML
-            string markupFile = System.IO.Path.Combine(Plugin.appFolder, $"tcmatch.readme.{languageDefinitionToLoad.languageIsoCode}.md");
+            string markupFile = System.IO.Path.Combine(Plugin.pluginFolder, $"tcmatch.readme.{languageDefinitionToLoad.languageIsoCode}.md");
             string markupContent = ReadMarkdownFile(markupFile);
             string htmlContent = GetHtmlFromMarkdown(markupContent, config.theme);
             _documentationIsLoaded = true;
@@ -8879,10 +8879,3 @@ namespace tcmatch.Core
 //  > Commit changes and push commit to origin
 //  > Create new Release on GitHub (upload "QSX2 YYYY-MM-DD.zip", copy release notes from CHANGELOG.md)
 //  > Update forum thread: https://www.ghisler.ch/board/viewtopic.php?t=22592
-
-
-// ToDo:
-//  > avoid [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)] in release build
-//     > replace double by decimal?
-//     > check if other places cause errors
-//     > see also: WindowHelper.AllowLargeNumbers

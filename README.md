@@ -894,34 +894,50 @@ tcmatch64=D:\Portable\Total Commander Tools\QSX2\tcmatch64.dll
 <a id="directory-redirection"></a>
 ## 📂 6.2 Directory Redirection
 
-On startup, the plugin automatically determines two central working directories:
+The plugin uses two different directories for its files:
 
-### 📂 AppFolder (Plugin Directory)
+### 📂 PluginFolder (Plugin Directory)
 
-Contains the plugin DLLs and associated data files. The path is specified directly via `wincmd.ini` (Default: `%COMMANDER_PATH%\QSX2\`, see 📦 [6. Installation](#installation); for exceptions see 📂 [6.1 Alternative Installation Folder](#alternative-installation-folder)).
+This directory contains the plugin files, in particular:
+
+* `tcmatch.dll`
+* `tcmatch64.dll`
+* `tcmatch.path.txt`
+* `tcmatch.readme.en.md`
+* `tcmatch.readme.de.md`
+* `tcmatch.pinyin.tbl`
+
+The path is specified directly in `wincmd.ini` (Default: `%COMMANDER_PATH%\QSX2\`, see 📦 [6. Installation](#installation); for an alternative location, see 📂 [6.1 Alternative Installation Folder](#alternative-installation-folder)).
 
 ### 📂 DataFolder (Configuration & Logs)
 
-Contains configuration and log files. Determination follows this logic:
+This directory contains the plugin's configuration and log files:
 
-#### 1. Standard Path: System Roaming User Profile:
+- `tcmatch.xml`
+- `tcmatch.log`
+- a temporary browser profile for the plugin interface
 
-`%appdata%\QSX2\` (e.g., `C:\Users\<username>\AppData\Roaming\QSX2\`)
+By default, the `DataFolder` is located in the roaming user profile:
 
-#### 2. Custom Path via `tcmatch.path.txt`:
+`%APPDATA%\QSX2\` (e.g. `C:\Users\<username>\AppData\Roaming\QSX2\`)
 
-If a file named `tcmatch.path.txt` with a valid path exists in the `AppFolder`, it overrides the standard path.
+### 🔀 Redirect DataFolder via `tcmatch.path.txt`
+
+To store the `DataFolder` in a different location, a file named `tcmatch.path.txt` can be created in the `PluginFolder`.
+
+If this file contains a valid path, it is used as the `DataFolder` and replaces the default path `%APPDATA%\QSX2\`.
 
 Examples of possible path specifications in `tcmatch.path.txt`:
 - **Absolute path:** `D:\Portable\Total Commander Tools\QSX2Config\`
 - **With environment variables:** `%COMMANDER_PATH%\QSX2\Config\`
-- **Relative to `AppFolder`:**
-    - `.\QSX2Config\` → becomes `...\Total Commander\QSX2\QSX2Config\`
-    - `.\..\QSX2Config\` → becomes `...\Total Commander\QSX2Config\`
+- **Relative to `PluginFolder`:**
+    - `.\` → resolves to `...\Total Commander\QSX2\` (`PluginFolder` & `DataFolder` are the same)
+    - `.\QSX2Config\` → resolves to `...\Total Commander\QSX2\QSX2Config\`
+    - `.\..\QSX2Config\` → resolves to `...\Total Commander\QSX2Config\`
 
-#### 3. Fallback Option for Missing Write Permissions:
+### 🛡️ Fallback for Missing Write Permissions
 
-If write access to the target folder fails, the plugin automatically falls back to the system temporary directory `%TEMP%` (e.g., `C:\Users\<username>\AppData\Local\Temp\`) to guarantee crash-free operation.
+If writing to the determined `DataFolder` fails, the plugin automatically falls back to the system temporary directory `%TEMP%` (e.g. `C:\Users\<username>\AppData\Local\Temp\`) to ensure stable operation.
 
 [📖 Back to top](#table-of-contents)
 

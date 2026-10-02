@@ -894,34 +894,50 @@ tcmatch64=D:\Portable\Total Commander Tools\QSX2\tcmatch64.dll
 <a id="verzeichnis-umleitung"></a>
 ## 📂 6.2 Verzeichnis-Umleitung
 
-Beim Start ermittelt das Plugin automatisch zwei zentrale Betriebsordner:
+Das Plugin verwendet zwei verschiedene Verzeichnisse für seine Dateien:
 
-### 📂 AppFolder (Plugin-Verzeichnis)
+### 📂 PluginFolder (Plugin-Verzeichnis)
 
-Enthält die Plugin-DLLs sowie zugehörige Datendateien. Der Pfad wird direkt über die `wincmd.ini` vorgegeben (Standard: `%COMMANDER_PATH%\QSX2\`, siehe 📦 [6. Installation](#installation); abweichend siehe 📂 [6.1 Alternativer Installationsordner](#alternativer-installationsordner)).
+Dieses Verzeichnis enthält die Plugin-Dateien, insbesondere:
+
+* `tcmatch.dll`
+* `tcmatch64.dll`
+* `tcmatch.path.txt`
+* `tcmatch.readme.en.md`
+* `tcmatch.readme.de.md`
+* `tcmatch.pinyin.tbl`
+
+Der Pfad wird direkt über die `wincmd.ini` vorgegeben (Standard: `%COMMANDER_PATH%\QSX2\`, siehe 📦 [6. Installation](#installation); abweichend siehe 📂 [6.1 Alternativer Installationsordner](#alternativer-installationsordner)).
 
 ### 📂 DataFolder (Konfiguration & Logs)
 
-Enthält Konfigurations- und Logdateien. Die Ermittlung erfolgt über folgende Logik:
+Dieses Verzeichnis enthält die Konfigurations- und Logdateien des Plugins:
 
-#### 1. Standard-Pfad: Roaming-Benutzerprofil des Systems:
+- `tcmatch.xml`
+- `tcmatch.log`
+- ein temporäres Browserprofil für die Plugin-Oberfläche
 
-`%appdata%\QSX2\` (z. B. `C:\Users\<username>\AppData\Roaming\QSX2\`)
+Standardmäßig befindet sich der `DataFolder` im Roaming-Benutzerprofil:
 
-#### 2. Abweichender Pfad via `tcmatch.path.txt`:
+`%APPDATA%\QSX2\` (z. B. `C:\Users\<username>\AppData\Roaming\QSX2\`)
 
-Existiert im `AppFolder` eine Datei namens `tcmatch.path.txt` mit einem gültigen Pfad, überschreibt dieser den Standard-Pfad.
+### 🔀 DataFolder via `tcmatch.path.txt` umleiten
+
+Soll der `DataFolder` an einer anderen Stelle liegen, kann im `PluginFolder` eine Datei namens `tcmatch.path.txt` angelegt werden.
+
+Enthält diese Datei einen gültigen Pfad, wird dieser als `DataFolder` verwendet und ersetzt den Standardpfad `%APPDATA%\QSX2\`.
 
 Beispiele für mögliche Pfadangaben in der `tcmatch.path.txt`:
 - **Absoluter Pfad:** `D:\Portable\Total Commander Tools\QSX2Config\`
 - **Mit Umgebungsvariablen:** `%COMMANDER_PATH%\QSX2\Config\`
-- **Relativ zum `AppFolder`:**
+- **Relativ zum `PluginFolder`:**
+    - `.\` → wird zu `...\Total Commander\QSX2\` (`PluginFolder` & `DataFolder` sind gleich)
     - `.\QSX2Config\` → wird zu `...\Total Commander\QSX2\QSX2Config\`
     - `.\..\QSX2Config\` → wird zu `...\Total Commander\QSX2Config\`
 
-#### 3. Ausweichoption bei fehlenden Schreibrechten:
+### 🛡️ Ausweichoption bei fehlenden Schreibrechten
 
-Schlägt der Schreibzugriff auf den Zielordner fehl, weicht das Plugin automatisch auf das temporäre Systemverzeichnis `%TEMP%` aus (z. B. `C:\Users\<username>\AppData\Local\Temp\`), um einen absturzfreien Betrieb zu garantieren.
+Schlägt der Schreibzugriff auf das ermittelte `DataFolder` fehl, weicht das Plugin automatisch auf das temporäre Systemverzeichnis `%TEMP%` aus (z. B. `C:\Users\<username>\AppData\Local\Temp\`), um einen stabilen Betrieb zu gewährleisten.
 
 [📖 Nach oben](#inhaltsverzeichnis)
 

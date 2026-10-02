@@ -12,9 +12,11 @@ Complete ground-up rewrite in .NET / C# with modern UI architecture.
 
 - **Modern Appearance:** Full Dark Mode support, custom color themes, and UI customization.
 - **Interactive Search Assistant:** Overhauled floating window with live search visualization, search history, customizable screen anchoring/positioning, modular collapsible sections, tooltips, and context menus.
+- **Built-in Search Assistant:** The previous search assistant was provided externally via AutoHotkey, requiring a separate thread and occasionally being incorrectly flagged by antivirus software. The new search assistant is fully integrated into the plugin DLL.
 - **Redesigned Settings & Built-in Tools:** Integrated documentation viewer, log manager, custom translation engine, custom themes system, and full control over every syntax character.
 - **Self-Explanatory Options:** Explanatory banners and detailed description texts explain settings directly on the spot.
-- **Flexible Directory Redirection:** Separated `AppFolder` and `DataFolder` with path overriding via `tcmatch.path.txt` and automatic fallback to `%TEMP%`.
+- **Flexible Directory Redirection:** Separated `PluginFolder` (previously `AppFolder`) and `DataFolder` with path overriding via `tcmatch.path.txt` and automatic fallback to `%TEMP%`.
+- **New Official Download Location:** The QSX1 download folder was unfortunately not reliably accessible for many years. I apologize for the inconvenience. QSX2 is now hosted and distributed through the GitHub repository.
 
 ### 🔍 Search Engine & Syntax Enhancements
 
