@@ -451,23 +451,23 @@ Um Steuerzeichen (`|`, ` `, `/`, `!`, `~`, `^`, `$`, `=`, `?`, `%`, `<`, `*`, `@
 
 Sind viele Steuerzeichen vorhanden, vereinfacht die Maskierung von Textblöcken (`"..."`) die Eingabe erheblich.
 
-- **Beispiel:** Gesucht werden Dateien wie `Report 2026 - #final.pdf` und `Report 2026 - #draft.xlsx`.
+- **Beispiel:** Gesucht werden Dateien wie `Report 2026 - #final.pdf`.
 
-| Variante                     | 🔍 [2.3.2 Regex-Suche](#regex-suche)        | 🔍 [2.3.3 Mustersuche](#mustersuche) |
-| ---                          | ---                                         | ---                                  |
-| **unmaskierter Suchtext**    | `?Report \d\d\d\d - #(final|draft)`         | `%Report #### - \#(final,draft)`     |
-| **Textblock-Maskierung**     | `?"Report \d\d\d\d - #(final|draft)"`       | `%"Report #### - \#(final,draft)"`   |
-| **Einzelzeichen-Maskierung** | `?Report\ \\d\\d\\d\\d\ -\ #(final\|draft)` | `%Report\ ####\ -\ \\#(final,draft)` |
+| Variante                     | 🔍 [2.3.2 Regex-Suche](#regex-suche) | 🔍 [2.3.3 Mustersuche](#mustersuche) |
+| ---                          | ---                                  | ---                                  |
+| **unmaskierter Suchtext**    | `?Report \d\d\d\d - #final`          | `%Report #### - \#final`             |
+| **Textblock-Maskierung**     | `?"Report \d\d\d\d - #final"`        | `%"Report #### - \#final"`           |
+| **Einzelzeichen-Maskierung** | `?Report\ \\d\\d\\d\\d\ -\ #final`   | `%Report\ ####\ -\ \\#final`         |
 
 **🔹 Verschachtelte Anführungszeichen**
 
-Enthält der gesuchte Text selbst Anführungszeichen, kann der Textblock durch mehrere Anführungszeichen maskiert werden (z. B. `@content ""string msg = "ok";""`). Die Engine unterstützt bis zu 4 äußere Hochkommas (erlaubt bis zu 3 innere Hochkommas am Stück).
+Enthält der gesuchte Text selbst Anführungszeichen, kann der Textblock durch mehrere Anführungszeichen maskiert werden (z. B. `@content ""string msg = "ok";""`). Die Engine unterstützt bis zu 4 äußere Anführungszeichen (erlaubt bis zu 3 innere Anführungszeichen am Stück).
 
-| Variante                     | 1 Hochkomma                | 2 Hochkommas am Stück      | 4 Hochkommas am Stück         |
-| ---                          | ---                        | ---                        | ---                           |
-| **unmaskierter Suchtext**    | `@content msg = "ok";`     | `@content msg = "";`       | `@content msg = @"""";`       |
-| **Textblock-Maskierung**     | `@content ""msg = "ok";""` | `@content """msg = "";"""` | *nicht möglich*               |
-| **Einzelzeichen-Maskierung** | `@content msg\ =\ \"ok\";` | `@content msg\ =\ \"\";`   | `@content msg\ =\ @\"\"\"\";` |
+| Variante                     | 1 Anführungszeichen        | 2 Anführungszeichen am Stück | 4 Anführungszeichen am Stück  |
+| ---                          | ---                        | ---                          | ---                           |
+| **unmaskierter Suchtext**    | `@content msg = "ok";`     | `@content msg = "";`         | `@content msg = @"""";`       |
+| **Textblock-Maskierung**     | `@content ""msg = "ok";""` | `@content """msg = "";"""`   | *nicht möglich*               |
+| **Einzelzeichen-Maskierung** | `@content msg\ =\ \"ok\";` | `@content msg\ =\ \"\";`     | `@content msg\ =\ @\"\"\"\";` |
 
 [📖 Nach oben](#inhaltsverzeichnis)
 
@@ -492,7 +492,6 @@ Um die Syntax in Aktion zu sehen, zeigt die folgende Übersicht praxisnahe Abfra
 | `@ext pdf @age <7`                       | Findet PDF-Dateien (`@ext`), die in den letzten 7 Tagen geändert wurden (`@age`).                                                                                                           |
 | `@size >2G @ext mkv/mp4`                 | Sucht nach Videodateien (`.mkv` oder `.mp4`), die größer als 2 GB sind.                                                                                                                     |
 | `@path "\archive\2025\" @name !^backup`  | Berücksichtigt nur Dateien, deren Pfad `\archive\2025\` enthält, schließt aber Dateien aus, deren Name mit `backup` beginnt.                                                                |
-| `client\ A @ext pdf|client\ B @ext xlsx` | Globales ODER mit maskiertem Leerzeichen: Findet entweder PDFs für `Client A` ODER Excel-Dateien für `Client B`.                                                                            |
 | `^?[0-9]{4}_backup`                      | Regex-Suche nach Dateinamen, die mit einer 4-stelligen Jahreszahl gefolgt von `_backup` beginnen (z. B. `2026_backup.zip`).                                                                 |
 | `@content %[80..100]%`                   | Volltextsuche innerhalb von Dokumenten nach Prozentwerten ab 80% (z. B. `83%` oder `95%`).                                                                                                  |
 | `@res ^$%[1920..]x[1080..]`              | WDX-Plugin-Suche: Findet Bilder ab Full-HD-Auflösung (mindestens 1920×1080 Pixel).                                                                                                          |
@@ -705,6 +704,8 @@ In den Einstellungen lässt sich genau festlegen, wie und wo sich der Assistent 
 
 - **Ankerpunkt:** Das Fenster kann relativ zum **Bildschirm**, zum **Total Commander Hauptfenster** oder zum **Total Commander Schnellfilter-Dialog** ausgerichtet werden (Ausrichtung an allen vier Ecken möglich).
 - **Feinjustierung:** Über Pixel-Abstände (X/Y) und die Angabe von Breite und Höhe lässt sich das Fenster nahtlos an das eigene Layout anpassen.
+
+> 💡 Die konfigurierte Position und Größe werden unverändert übernommen und können über den sichtbaren Bereich hinausreichen. Dies kann bei mehreren Monitoren sinnvoll sein und liegt in der Verantwortung des Anwenders.
 
 ---
 
@@ -954,7 +955,7 @@ Für das Verständnis von Systemgrenzen ist es hilfreich, die Arbeitsweise der T
 1. **Binäre Entscheidung:** Die Kernmethode `MatchFileExW` entscheidet für jede Datei rein binär, ob sie zum Filtertext passt (`1`) oder nicht (`0`). Abstufungen (z. B. `90 % Übereinstimmung`) oder optische Hervorhebungen lassen sich über die Schnittstelle nicht zurückgeben.
 2. **Übergebene Daten:** Total Commander übergibt lediglich Dateiname und -pfad. Sämtliche Zusatzdaten (wie Metadaten oder Eigenschaften) muss das Plugin selbst ermitteln.
 3. **Abfrage Datei für Datei:** Es wird keine Gesamtliste eines Verzeichnisses übermittelt. Bei jeder Änderung im Schnellfilter-Dialog geht Total Commander den Ordnerinhalt Element für Element durch und sendet für jeden Eintrag eine einzelne Anfrage an das Plugin.
-4. **Keine Steuerung der Benutzeroberfläche:** Der Schnellfilter-Dialog wird vollständig von Total Commander verwaltet. Optik, Position und Grundfunktionen des Eingabefensters lassen sich vom Plugin nicht beeinflussen.
+4. **Keine Steuerung der Benutzeroberfläche:** Der Schnellfilter-Dialog wird vollständig von Total Commander verwaltet. Optik, Position und Grundfunktionen des Eingabefensters lassen sich vom Plugin nicht beeinflussen. Die Schnittstelle benachrichtigt das Plugin aktuell nicht über das Öffnen oder Schließen des Schnellfilter-Dialogs.
 
 Manche Features oder Verhaltensweisen lassen sich daher nicht vom Plugin selbst beeinflussen, da sie durch die Schnittstelle vorgegeben sind.
 
@@ -1004,8 +1005,6 @@ Dieses Projekt lebt vom Engagement seiner Community. Ein herzliches Dankeschön 
 | :---                        | :---          |
 | **Idee & Hauptentwicklung** | Samuel Plentz |
 | **Weitere Entwicklung**     | Du?           |
-| **Fehler-Finder**           | Du?           |
-| **Ideen-Geber**             | Du?           |
 | **Übersetzung (DE)**        | Samuel Plentz |
 | **Übersetzung (EN)**        | Samuel Plentz |
 | **Theme (Light)**           | Samuel Plentz |

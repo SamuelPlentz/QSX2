@@ -444,24 +444,24 @@ Custom metadata tags can be assigned in the settings to any external Total Comma
 
 To treat control characters (`|`, ` `, `/`, `!`, `~`, `^`, `$`, `=`, `?`, `%`, `<`, `*`, `@`) as regular search text, they must be escaped. Without escaping, for example, spaces in `Project Status Report` would unintentionally split the search text into separate conditions. Two methods are available for escaping:
 
-- **Escaping individual characters (`\`):** A prepended backslash (`\`) cancels the special function of the directly following character (e.g., `Project\ Status\ Report`).
+- **Escaping individual characters (`\`):** A preceding backslash (`\`) cancels the special function of the directly following character (e.g., `Project\ Status\ Report`).
 - **Escaping text blocks (`"..."`):** To disable all control characters in a text simultaneously, the entire text is enclosed in double quotes (e.g., `"Project Status Report"`).
 
 **🔹 Complex Examples:**
 
 When many control characters are present, escaping text blocks (`"..."`) simplifies input significantly.
 
-- **Example:** Searching for files like `Report 2026 - #final.pdf` and `Report 2026 - #draft.xlsx`.
+- **Example:** Searching for files like `Report 2026 - #final.pdf`.
 
-| Variant                       | 🔍 [2.3.2 Regex Search](#regex-search)      | 🔍 [2.3.3 Pattern Search](#pattern-search) |
-| ---                           | ---                                         | ---                                        |
-| **Unescaped search text**     | `?Report \d\d\d\d - #(final|draft)`         | `%Report #### - \#(final,draft)`           |
-| **Text block escaping**       | `?"Report \d\d\d\d - #(final|draft)"`       | `%"Report #### - \#(final,draft)"`         |
-| **Single character escaping** | `?Report\ \\d\\d\\d\\d\ -\ #(final\|draft)` | `%Report\ ####\ -\ \\#(final,draft)`       |
+| Variant                       | 🔍 [2.3.2 Regex Search](#regex-search) | 🔍 [2.3.3 Pattern Search](#pattern-search) |
+| ---                           | ---                                    | ---                                        |
+| **Unescaped search text**     | `?Report \d\d\d\d - #final`            | `%Report #### - \#final`                   |
+| **Text block escaping**       | `?"Report \d\d\d\d - #final"`          | `%"Report #### - \#final"`                 |
+| **Single character escaping** | `?Report\ \\d\\d\\d\\d\ -\ #final`     | `%Report\ ####\ -\ \\#final`               |
 
 **🔹 Nested Quotes**
 
-If the searched text itself contains quotation marks, the text block can be escaped using multiple quotation marks (e.g., `@content ""string msg = "ok";""`). The engine supports up to 4 outer double quotes (allowing up to 3 inner consecutive double quotes).
+If the searched text itself contains double quotes, the text block can be escaped using multiple double quotes (e.g., `@content ""string msg = "ok";""`). The engine supports up to 4 outer double quotes (allowing up to 3 inner consecutive double quotes).
 
 | Variant                       | 1 quote                    | 2 consecutive quotes       | 4 consecutive quotes          |
 | ---                           | ---                        | ---                        | ---                           |
@@ -492,7 +492,6 @@ To see the syntax in action, the following overview shows practical queries rang
 | `@ext pdf @age <7`                         | Finds PDF files (`@ext`) modified within the last 7 days (`@age`).                                                                                                            |
 | `@size >2G @ext mkv/mp4`                   | Searches for video files (`.mkv` or `.mp4`) larger than 2 GB.                                                                                                                 |
 | `@path "\archive\2025\" @name !^backup`    | Considers only files whose path contains `\archive\2025\`, but excludes files whose name starts with `backup`.                                                                |
-| `client\ A @ext pdf | client\ B @ext xlsx` | Global OR with escaped space: Finds either PDFs for Client A OR Excel files for Client B.                                                                                     |
 | `^?[0-9]{4}_backup`                        | Regex search for filenames starting with a 4-digit year followed by `_backup` (e.g., `2026_backup.zip`).                                                                      |
 | `@content %[80..100]%`                     | Full-text search inside documents for percentage values starting from 80% (e.g., `83%` or `95%`).                                                                             |
 | `@res ^$%[1920..]x[1080..]`                | WDX plugin search: Finds images with Full HD resolution or higher (at least 1920×1080 pixels).                                                                                |
@@ -705,6 +704,8 @@ The settings allow you to specify exactly how and where the assistant presents i
 
 - **Anchor Point:** The window can be aligned relative to the **screen**, the **Total Commander main window**, or the **Total Commander Quick Filter dialog** (alignment at all four corners is possible).
 - **Fine Adjustment:** Using pixel offsets (X/Y) and setting width and height, the window can be seamlessly adapted to your layout.
+
+> 💡 The configured position and size are applied unchanged and may extend beyond the visible screen area. This can be useful with multiple monitors and is the user's responsibility.
 
 ---
 
@@ -954,7 +955,7 @@ To understand system limitations, it is helpful to know how the Total Commander 
 1. **Binary Decision:** The core method `MatchFileExW` decides purely binarily for each file whether it matches the filter text (`1`) or not (`0`). Graduations (e.g., `90% match`) or visual highlights cannot be returned via the interface.
 2. **Passed Data:** Total Commander passes only the filename and path. All additional data (such as metadata or properties) must be determined by the plugin itself.
 3. **File-by-File Query:** No overall list of a directory is transmitted. With every change in the Quick Filter dialog, Total Commander iterates through the folder contents item by item and sends a single request to the plugin for each entry.
-4. **No Control Over User Interface:** The Quick Filter dialog is managed entirely by Total Commander. Look, position, and basic functionality of the input window cannot be influenced by the plugin.
+4. **No Control Over User Interface:** The Quick Filter dialog is managed entirely by Total Commander. Look, position, and basic functionality of the input window cannot be influenced by the plugin. The interface currently does not notify the plugin when the Quick Filter dialog is opened or closed.
 
 Some features or behaviors can therefore not be influenced by the plugin itself, as they are defined by the interface.
 
@@ -1004,8 +1005,6 @@ This project thrives on the commitment of its community. A heartfelt thank you g
 | ---                         | ---           |
 | **Idea & Main Development** | Samuel Plentz |
 | **Further Development**     | You?          |
-| **Bug Finder**              | You?          |
-| **Idea Provider**           | You?          |
 | **Translation (DE)**        | Samuel Plentz |
 | **Translation (EN)**        | Samuel Plentz |
 | **Theme (Light)**           | Samuel Plentz |
