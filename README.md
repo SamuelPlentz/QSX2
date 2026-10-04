@@ -915,8 +915,9 @@ The path is specified directly in `wincmd.ini` (Default: `%COMMANDER_PATH%\QSX2\
 This directory contains the plugin's configuration and log files:
 
 - `tcmatch.xml`
+- `tcmatch.replacements.txt`
 - `tcmatch.log`
-- a temporary browser profile for the plugin interface
+- `BrowserProfile` - a temporary browser profile for the plugin interface
 
 By default, the `DataFolder` is located in the roaming user profile:
 

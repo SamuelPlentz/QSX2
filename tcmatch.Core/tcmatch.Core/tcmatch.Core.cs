@@ -6527,6 +6527,26 @@ namespace tcmatch.Core
             WindowHelper.LoadXAML(this, "tcmatch.Core.ConfigWindow.xaml");
             config.PopulateViewFields_CurrentWindow_Theme(null, this);
 
+            #region Adjust initial window size to available screen space
+            const double margin = 50;
+
+            var source = PresentationSource.FromVisual(searchAssistantWindow);
+
+            double scaleX = 1.0;
+            double scaleY = 1.0;
+
+            if(source?.CompositionTarget != null) {
+                scaleX = source.CompositionTarget.TransformToDevice.M11;
+                scaleY = source.CompositionTarget.TransformToDevice.M22;
+            }
+
+            double availableWidth = (searchAssistantWindow.workAreaRect.Right - searchAssistantWindow.workAreaRect.Left) / scaleX - 2 * margin;
+            double availableHeight = (searchAssistantWindow.workAreaRect.Bottom - searchAssistantWindow.workAreaRect.Top) / scaleY - 2 * margin;
+
+            if(Width > availableWidth) Width = availableWidth;
+            if(Height > availableHeight) Height = availableHeight;
+            #endregion
+
             useraction = true;
         }
         #endregion
@@ -7551,6 +7571,7 @@ namespace tcmatch.Core
         private NativeMethods.RECT tcMainRect;
         private NativeMethods.RECT tcQuickSearchRect;
         private NativeMethods.RECT desktopRect;
+        internal NativeMethods.RECT workAreaRect;
 
         private System.Windows.Threading.DispatcherTimer activeWindowMonitorTimer;
         private bool isConfigOpen = false;
@@ -8584,6 +8605,7 @@ namespace tcmatch.Core
 
                     if(NativeMethods.GetMonitorInfo(hMonitor, ref info)) {
                         desktopRect = info.rcMonitor; // Pure physical screen bounds, completely ignoring taskbar
+                        workAreaRect = info.rcWork;   // Usable work area, excluding taskbar and other desktop toolbars
                     }
                 }
             }
@@ -8613,7 +8635,7 @@ namespace tcmatch.Core
             double scaleX = 1.0;
             double scaleY = 1.0;
 
-            if(source != null && source.CompositionTarget != null) {
+            if(source?.CompositionTarget != null) {
                 scaleX = source.CompositionTarget.TransformToDevice.M11;
                 scaleY = source.CompositionTarget.TransformToDevice.M22;
             }

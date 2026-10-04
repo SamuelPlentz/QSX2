@@ -915,8 +915,9 @@ Der Pfad wird direkt über die `wincmd.ini` vorgegeben (Standard: `%COMMANDER_PA
 Dieses Verzeichnis enthält die Konfigurations- und Logdateien des Plugins:
 
 - `tcmatch.xml`
+- `tcmatch.replacements.txt`
 - `tcmatch.log`
-- ein temporäres Browserprofil für die Plugin-Oberfläche
+- `BrowserProfile` - ein temporäres Browserprofil für die Plugin-Oberfläche
 
 Standardmäßig befindet sich der `DataFolder` im Roaming-Benutzerprofil:
 
