@@ -694,11 +694,11 @@ Der **interaktive Suchassistent** öffnet sich normalerweise automatisch zusamme
 
 Über das ⚙️ **Zahnrad-Symbol** im Assistenten lassen sich direkt die ⚙️ [5. Einstellungen](#einstellungen) öffnen.
 
-> 💡 Wurde der Assistent in den Einstellungen deaktiviert, kann er jederzeit manuell durch die Eingabe des Steuerbefehls `@gui` im Suchfenster von Total Commander aufgerufen werden.
+> 💡 Wurde der Assistent in den Einstellungen deaktiviert, kann er jederzeit manuell durch die Eingabe des Steuerbefehls `@gui` im Schnellfilter-Dialog von Total Commander aufgerufen werden.
 
 ---
 
-### Suchassistent-Fenster
+## Suchassistent-Fenster
 
 In den Einstellungen lässt sich genau festlegen, wie und wo sich der Assistent auf dem Bildschirm präsentiert:
 
@@ -709,7 +709,7 @@ In den Einstellungen lässt sich genau festlegen, wie und wo sich der Assistent 
 
 ---
 
-### Inhalt und Reihenfolge des Suchassistenten
+## Inhalt und Reihenfolge des Suchassistenten
 
 Der Suchassistent ist modular aufgebaut. In den Einstellungen wird jede Rubrik mit einer kurzen Beschreibung vorgestellt. Reihenfolge und Anzeigestatus (*Aufgeklappt*, *Zugeklappt* oder *Deaktiviert*) der einzelnen Rubriken können individuell angepasst werden.
 
@@ -719,6 +719,70 @@ Der Suchassistent ist modular aufgebaut. In den Einstellungen wird jede Rubrik m
 - Das Suchassistent-Fenster lässt sich bei Bedarf über die rechte Bildlaufleiste oder mit dem Mausrad scrollen.
 - Fahre mit der Maus über Schaltflächen, um hilfreiche Tooltipps anzuzeigen.
 - Über das Kontextmenü sind teilweise weiterführende Aktionen sowie Tastenkürzel (z. B. **Strg + Klick**) erreichbar.
+
+### 4.1 🔍 Such-Struktur
+
+Zeigt die aktuelle Suchabfrage in der von der 🧠 [2. Suchsyntax](#suchsyntax) interpretierten Struktur.
+
+Jeder Bestandteil des im Schnellfilter-Dialog von Total Commander eingegebenen Suchtexts wird als eigener visueller Bereich dargestellt. So wird unmittelbar sichtbar, wie QSX2 die Eingabe interpretiert.
+
+**Beispiel:** Bei `final @ext pdf @age <14` ist direkt erkennbar, welche Bestandteile als Suchtext, Metadatenfilter und Altersfilter interpretiert werden.
+
+Die dargestellten Elemente und ihre Tooltipps dienen ausschließlich der Information und sind nicht interaktiv.
+
+### 4.2 ⌨️ Verfügbare Steuerzeichen
+
+Listet alle aktuell aktiven Steuerzeichen mit ihrem jeweils verwendeten Zeichen auf. Deaktivierte Steuerzeichen werden hier nicht angezeigt. Wurde in den Einstellungen ein anderes Zeichen für eine Funktion festgelegt, wird hier das tatsächlich verwendete Zeichen angezeigt.
+
+Am Ende der Rubrik werden außerdem alle gültigen Metadaten-Tags angezeigt.
+
+**Interaktion:** Ein Klick auf eine Schaltfläche fügt das entsprechende Zeichen bzw. den zugehörigen Text in den Schnellfilter-Dialog ein oder vervollständigt den bestehenden Suchtext.
+
+### 4.3 🔄 Text-Ersetzungen
+
+Listet bis zu 25 aktive 📝 [3.5 Ersetzungsregeln](#ersetzungsregeln) auf, deren Suchtext aus mindestens zwei Zeichen besteht und die den Filtertext betreffen.
+
+**Interaktion:**
+
+- **Klick:** Fügt den Suchtext der Ersetzungsregel in den Schnellfilter-Dialog ein.
+- **Strg + Klick:** Ersetzt den kompletten Text im Schnellfilter-Dialog durch den Suchtext der Ersetzungsregel.
+- Über das **Kontextmenü** kann auch direkt der Ersetzungstext der Ersetzungsregel eingefügt werden.
+
+### 4.4 💡 Eingabehinweise
+
+Zeigt dynamisch mögliche nächste Zeichen oder Eingaben passend zum aktuellen Suchtext.
+
+Dabei werden nur Zeichen vorgeschlagen, die an der jeweiligen Stelle gemäß der 🧠 [2. Suchsyntax](#suchsyntax) zulässig sind.
+
+**Interaktion:** Ein Klick auf eine Schaltfläche fügt das entsprechende Zeichen bzw. den vorgeschlagenen Text in den Schnellfilter-Dialog ein oder vervollständigt den bestehenden Suchtext.
+
+### 4.5 ⚡ Schnellzugriff
+
+Bietet direkten Zugriff auf häufig benötigte Funktionen:
+
+- **Suchverlauf anzeigen:** Öffnet den Suchverlauf. Eine vergangene Suche kann ausgewählt und direkt in den Schnellfilter-Dialog übernommen werden.
+- **Zwischenablage einfügen:** Fügt den Inhalt der Zwischenablage in den Schnellfilter-Dialog ein. Mit **Strg + Klick** wird der bisherige Inhalt vollständig ersetzt. Im Gegensatz zu einem einfachen **Strg + V** im Total Commander Schnellfilter-Dialog, bei dem die Eingabe Zeichen für Zeichen erfolgt und dadurch für jedes Zeichen ein neuer Suchlauf ausgelöst wird, verarbeitet diese Schaltfläche den gesamten Inhalt in einem einzigen Suchlauf.
+- **Suchfeld leeren:** Leert den aktuellen Suchtext.
+
+Weitere Schaltflächen ermöglichen, einzelne Einstellungen direkt im Suchassistenten umzuschalten, ohne dafür die ⚙️ [5. Einstellungen](#einstellungen) zu öffnen.
+
+Diese Änderungen gelten nur für die aktuelle Sitzung. Beim Neustart von Total Commander oder nach einer Änderung im Einstellungsfenster werden die konfigurierten Werte wiederhergestellt.
+
+### 4.6 ⌨️ Erkannte Such-Sonderzeichen
+
+Zeigt eine kompakte Zusammenfassung der im aktuellen Suchtext verwendeten Such-Sonderzeichen.
+
+Dabei werden nicht alle Steuerzeichen aufgeführt, sondern insbesondere verwendete **Modifier- und Maskierungszeichen**.
+
+### 4.7 ⚠️ Fehler und Warnungen
+
+Diese Rubriken werden nur angezeigt, wenn bei der Eingabe im Schnellfilter-Dialog ein Fehler erkannt wurde oder wenn eine Warnung zur Suchperformance vorliegt.
+
+Es wird daher empfohlen, diese Rubriken immer eingeblendet zu lassen.
+
+### 4.8 📊 Informationen
+
+Enthält Informationen und Statistiken zur Performance der aktuellen Suche.
 
 [📖 Nach oben](#inhaltsverzeichnis)
 

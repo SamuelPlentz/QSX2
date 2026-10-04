@@ -690,15 +690,15 @@ Templates are a practical special case of the 📝 [3.5 Replacement Rules](#repl
 <a id="the-interactive-search-assistant"></a>
 # 💡 4. The Interactive Search Assistant
 
-The **interactive search assistant** usually opens automatically alongside the **Quick Filter dialog** (Ctrl+S) of Total Commander. Among other features, it provides live visual feedback on the entered search logic, gives input tips, points out syntax errors, and offers quick accesses.
+The **interactive Search Assistant** normally opens automatically together with Total Commander's **Quick Filter dialog** (Ctrl+S). Among other things, it provides visual live feedback on the entered search logic, input hints, syntax error notifications, and quick access functions.
 
-The ⚙️ [5. Settings](#settings) can be opened directly via the ⚙️ **gear icon** in the assistant.
+The ⚙️ **gear icon** in the assistant opens ⚙️ [5. Settings](#settings) directly.
 
-> 💡 If the assistant has been disabled in the settings, it can be called manually at any time by entering the control command `@gui` in the Total Commander search box.
+> 💡 If the assistant has been disabled in the settings, it can be opened manually at any time by entering the control command `@gui` in Total Commander's Quick Filter dialog.
 
 ---
 
-### Search Assistant Window
+## Search Assistant Window
 
 The settings allow you to specify exactly how and where the assistant presents itself on the screen:
 
@@ -709,16 +709,80 @@ The settings allow you to specify exactly how and where the assistant presents i
 
 ---
 
-### Content and Order of the Search Assistant
+## Content and Order of the Search Assistant
 
-The search assistant is modularly structured. In the settings, each category is introduced with a short description. The order and display status (*Expanded*, *Collapsed*, or *Disabled*) of individual categories can be customized individually.
+The Search Assistant is modularly structured. In the settings, each category is introduced with a short description. The order and display status (*Expanded*, *Collapsed*, or *Disabled*) of individual categories can be customized individually.
 
 **💡 Tips for Use:**
 
 - For an optimal overview, only regularly required categories should remain initially *expanded*.
-- The search assistant window can be scrolled using the right scrollbar or the mouse wheel if necessary.
+- The Search Assistant window can be scrolled using the right scrollbar or the mouse wheel if necessary.
 - Hover over buttons to display helpful tooltips.
 - Advanced actions as well as keyboard shortcuts (e.g., **Ctrl + Click**) can be accessed via the context menu in some areas.
+
+### 4.1 🔍 Search Structure
+
+Displays the current search query in the structure interpreted according to 🧠 [2. Search Syntax](#search-syntax).
+
+Each component of the search text entered in Total Commander's Quick Filter dialog is displayed as a separate visual element. This makes it immediately apparent how QSX2 interprets the input.
+
+**Example:** With `final @ext pdf @age <14`, you can immediately see which parts are interpreted as search text, a metadata filter, and an age filter.
+
+The displayed elements and their tooltips are for information only and are not interactive.
+
+### 4.2 ⌨️ Available Control Characters
+
+Lists all currently active control characters together with their respective character. Disabled control characters are not displayed here. If a different character has been configured for a function in the settings, the character actually used is shown here.
+
+At the end of the section, all valid metadata tags are also displayed.
+
+**Interaction:** Clicking a button inserts the corresponding character or text into the Quick Filter dialog, or autocompletes the existing search text.
+
+### 4.3 🔄 Text Replacements
+
+Lists up to 25 active 📝 [3.5 Replacement Rules](#replacement-rules) whose search text consists of at least two characters and which affect the filter text.
+
+**Interaction:**
+
+- **Click:** Inserts the search text of the replacement rule into the Quick Filter dialog.
+- **Ctrl + Click:** Replaces the complete text in the Quick Filter dialog with the search text of the replacement rule.
+- The **context menu** can also be used to insert the replacement text of the replacement rule directly.
+
+### 4.4 💡 Input Hints
+
+Displays dynamic suggestions for possible next characters or inputs based on the current search text.
+
+Only characters that are valid at the respective position according to 🧠 [2. Search Syntax](#search-syntax) are suggested.
+
+**Interaction:** Clicking a button inserts the corresponding character or suggested text into the Quick Filter dialog, or autocompletes the existing search text.
+
+### 4.5 ⚡ Quick Access
+
+Provides direct access to frequently used functions:
+
+- **Show search history:** Opens the search history. A previous search can be selected and directly inserted into the Quick Filter dialog.
+- **Paste clipboard:** Inserts the clipboard contents into the Quick Filter dialog. With **Ctrl + Click**, the existing content is completely replaced. Unlike a simple **Ctrl + V** in Total Commander's Quick Filter dialog, where the input is processed character by character and a new search is triggered for each character, this button processes the entire content in a single step with a single search.
+- **Clear search field:** Clears the current search text.
+
+Additional buttons allow individual settings to be toggled directly in the Search Assistant without opening ⚙️ [5. Settings](#settings).
+
+These changes apply only to the current session. When Total Commander is restarted or settings are changed in the settings dialog, the configured values are restored.
+
+### 4.6 ⌨️ Detected Search Special Characters
+
+Displays a compact summary of the search special characters used in the current search text.
+
+Not all control characters are listed; in particular, the **modifier and escaping characters** used are displayed.
+
+### 4.7 ⚠️ Errors and Warnings
+
+These sections are displayed only when an error is detected in the input of the Quick Filter dialog or when a warning regarding search performance is present.
+
+It is therefore recommended to always keep these sections enabled.
+
+### 4.8 📊 Information
+
+Contains information and statistics about the performance of the current search.
 
 [📖 Back to top](#table-of-contents)
 
