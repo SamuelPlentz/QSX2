@@ -6489,6 +6489,7 @@ namespace tcmatch.Core
         private Config config;
         private bool useraction = true;
         private bool isSaving = false;
+        private bool escapeKeyDown = false;
 
         private bool _settingsTabActive = true;
         private double _settingsScrollOffset;
@@ -6548,6 +6549,13 @@ namespace tcmatch.Core
             #endregion
 
             useraction = true;
+        }
+        #endregion
+        #region private void Window_ContentRendered(object sender, EventArgs e)
+        private void Window_ContentRendered(object sender, EventArgs e)
+        {
+            // The SearchAssistantWindow uses WS_EX_NOACTIVATE, so explicitly activate the configuration window.
+            Activate();
         }
         #endregion
         #region private async void ResetDefaults_Click(object sender, RoutedEventArgs e)
@@ -6616,6 +6624,36 @@ namespace tcmatch.Core
             searchAssistantWindow.DataContext = null;
             searchAssistantWindow.DataContext = Plugin.config;
             searchAssistantWindow.config = Plugin.config;
+        }
+        #endregion
+        #region Close window on ESC key release
+        // Use KeyUp so the ESC key is not passed on to Total Commander.
+        // Track KeyDown because the WPFUI confirmation dialog handles ESC on KeyDown. Otherwise its ESC release would trigger another ESC here.
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if(e.Key == Key.Escape) {
+                if(!e.IsRepeat) escapeKeyDown = true;
+
+                e.Handled = true;
+                return;
+            }
+
+            base.OnPreviewKeyDown(e);
+        }
+
+        protected override void OnPreviewKeyUp(KeyEventArgs e)
+        {
+            if(e.Key == Key.Escape) {
+                if(escapeKeyDown) {
+                    escapeKeyDown = false;
+                    e.Handled = true;
+                    Close();
+                }
+
+                return;
+            }
+
+            base.OnPreviewKeyUp(e);
         }
         #endregion
         #region private void SaveButton_Click(object sender, RoutedEventArgs e)
