@@ -60,6 +60,12 @@ Die mehrschichtige Suchsyntax kombiniert Standard-Textfilter, reguläre Ausdrüc
 
 Egal ob nach Mustern, Dateialter, Dateigröße, Inhalten oder WDX-Inhalts-Plugins gefiltert wird – das Plugin interpretiert die Eingabe in Echtzeit und liefert über den **interaktiven Suchassistenten** direkte Rückmeldung zur aufgebauten Suchlogik.
 
+<!-- SCREENSHOT-START -->
+![QuickSearch eXtended 2 – Beispiele des Suchassistenten](data/screenshots/SearchAssistant-Examples-Light.png)
+<!-- SCREENSHOT-END -->
+
+Screenshot in voller Größe: [☀️ Heller Modus](https://github.com/SamuelPlentz/QSX2/blob/main/data/screenshots/SearchAssistant-Examples-Light.png) · [🌙 Dunkler Modus](https://github.com/SamuelPlentz/QSX2/blob/main/data/screenshots/SearchAssistant-Examples-Dark.png)
+
 [📖 Nach oben](#inhaltsverzeichnis)
 
 ---
@@ -923,7 +929,7 @@ Vor der Installation des Plugins ist sicherzustellen, dass das System die folgen
 1. **Download:** Das Archiv [QSX2 ####-##-##.zip](https://github.com/SamuelPlentz/QSX2/releases) herunterladen.
 2. **Total Commander neu starten (bei Updates):** Wurde eine ältere Plugin-Version seit dem letzten Start von Total Commander bereits verwendet, hebt ein Neustart von Total Commander die Dateisperren auf den DLLs auf (solange danach die Schnellsuche noch nicht aufgerufen wurde).
 3. **Automatische Installation:** Die Datei `QSX2.zip` innerhalb von Total Commander mit `Enter` öffnen. Das Plugin wird über den internen Dialog automatisch im Total Commander Unterordner `QSX2` installiert.
-4. **Konfiguration (`wincmd.ini`):** Bei Erstinstallation folgende Schlüssel unter der Sektion `[Configuration]` in der `wincmd.ini` ergänzen oder anpassen:
+4. **Konfiguration (`wincmd.ini`):** Bei Erstinstallation folgende Schlüssel unter der Sektion `[Configuration]` in der `wincmd.ini` ergänzen oder anpassen. **Anschließend muss Total Commander neu gestartet werden**, damit die Änderungen wirksam werden.
 
 ```ini
 [Configuration]

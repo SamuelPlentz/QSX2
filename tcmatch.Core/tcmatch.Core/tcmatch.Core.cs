@@ -7302,6 +7302,10 @@ namespace tcmatch.Core
             // 4. Load markup content and convert to HTML
             string markupFile = System.IO.Path.Combine(Plugin.pluginFolder, $"tcmatch.readme.{languageDefinitionToLoad.languageIsoCode}.md");
             string markupContent = ReadMarkdownFile(markupFile);
+
+            // Remove the screenshot preview from the packaged documentation.
+            markupContent = System.Text.RegularExpressions.Regex.Replace(markupContent, @"<!-- SCREENSHOT-START -->.*?<!-- SCREENSHOT-END -->", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline);
+
             string htmlContent = GetHtmlFromMarkdown(markupContent, config.theme);
             _documentationIsLoaded = true;
 
