@@ -41,6 +41,7 @@
     - ⚙️ [7.1 Funktionsweise & Grenzen der `tcmatch.dll`-Schnittstelle](#funktionsweise-grenzen-der-tcmatch-dll-schnittstelle)
     - 🚧 [7.2 Bekannte Einschränkungen](#bekannte-einschraenkungen)
     - 📋 [7.3 Checkliste zur Fehlerbehebung](#checkliste-zur-fehlerbehebung)
+    - 🚨 [7.4 Startprobleme](#startprobleme)
 - 📜 [8. Danksagung & Rechtliches](#danksagung-rechtliches)
     - 👥 [8.1 Mitwirkende](#mitwirkende)
     - 📦 [8.2 Danksagung](#danksagung)
@@ -64,7 +65,7 @@ Egal ob nach Mustern, Dateialter, Dateigröße, Inhalten oder WDX-Inhalts-Plugin
 ![QuickSearch eXtended 2 – Beispiele des Suchassistenten](data/screenshots/SearchAssistant-Examples-Light.png)
 <!-- SCREENSHOT-END -->
 
-Screenshot in voller Größe: [☀️ Heller Modus](https://github.com/SamuelPlentz/QSX2/blob/main/data/screenshots/SearchAssistant-Examples-Light.png) · [🌙 Dunkler Modus](https://github.com/SamuelPlentz/QSX2/blob/main/data/screenshots/SearchAssistant-Examples-Dark.png)
+Screenshots in voller Größe: [☀️ Heller Modus](https://raw.githubusercontent.com/SamuelPlentz/QSX2/main/data/screenshots/SearchAssistant-Examples-Light.png) · [🌙 Dunkler Modus](https://raw.githubusercontent.com/SamuelPlentz/QSX2/main/data/screenshots/SearchAssistant-Examples-Dark.png)
 
 [📖 Nach oben](#inhaltsverzeichnis)
 
@@ -971,45 +972,76 @@ Das Plugin verwendet zwei verschiedene Verzeichnisse für seine Dateien:
 
 Dieses Verzeichnis enthält die Plugin-Dateien, insbesondere:
 
-* `tcmatch.dll`
-* `tcmatch64.dll`
-* `tcmatch.path.txt`
-* `tcmatch.readme.en.md`
-* `tcmatch.readme.de.md`
-* `tcmatch.pinyin.tbl`
+- `tcmatch.dll`
+- `tcmatch64.dll`
+- `tcmatch.path.txt`
+- `tcmatch.readme.en.md`
+- `tcmatch.readme.de.md`
+- `tcmatch.pinyin.tbl`
 
 Der Pfad wird direkt über die `wincmd.ini` vorgegeben (Standard: `%COMMANDER_PATH%\QSX2\`, siehe 📦 [6. Installation](#installation); abweichend siehe 📂 [6.1 Alternativer Installationsordner](#alternativer-installationsordner)).
 
 ### 📂 DataFolder (Konfiguration & Logs)
 
-Dieses Verzeichnis enthält die Konfigurations- und Logdateien des Plugins:
+Dieses Verzeichnis enthält die Konfigurations- und Logdateien des Plugins, insbesondere:
 
 - `tcmatch.xml`
 - `tcmatch.replacements.txt`
 - `tcmatch.log`
-- `BrowserProfile` - ein temporäres Browserprofil für die Plugin-Oberfläche
+- `BrowserProfile` – Browserprofil für die Plugin-Oberfläche
 
 Standardmäßig befindet sich der `DataFolder` im Roaming-Benutzerprofil:
 
 `%APPDATA%\QSX2\` (z. B. `C:\Users\<username>\AppData\Roaming\QSX2\`)
 
+### 🛡️ Ausweichverzeichnis bei fehlenden Schreibrechten
+
+Kann das Standardverzeichnis im Roaming-Benutzerprofil nicht angelegt oder beschrieben werden, weicht das Plugin automatisch auf `%TEMP%` aus (z. B. `C:\Users\<username>\AppData\Local\Temp\`).
+
 ### 🔀 DataFolder via `tcmatch.path.txt` umleiten
 
 Soll der `DataFolder` an einer anderen Stelle liegen, kann im `PluginFolder` eine Datei namens `tcmatch.path.txt` angelegt werden.
 
-Enthält diese Datei einen gültigen Pfad, wird dieser als `DataFolder` verwendet und ersetzt den Standardpfad `%APPDATA%\QSX2\`.
+Enthält diese Datei eine gültige Pfaddefinition `folder for DataFolder=...`, verwendet QSX2 das angegebene Verzeichnis als `DataFolder`. Damit wird der Standardpfad `%APPDATA%\QSX2\` ersetzt.
 
 Beispiele für mögliche Pfadangaben in der `tcmatch.path.txt`:
-- **Absoluter Pfad:** `D:\Portable\Total Commander Tools\QSX2Config\`
-- **Mit Umgebungsvariablen:** `%COMMANDER_PATH%\QSX2\Config\`
+- **Absoluter Pfad:** `folder for DataFolder=D:\Portable\Total Commander Tools\QSX2Config\`
+- **Mit Umgebungsvariablen:** `folder for DataFolder=%COMMANDER_PATH%\QSX2\Config\`
 - **Relativ zum `PluginFolder`:**
-    - `.\` → wird zu `...\Total Commander\QSX2\` (`PluginFolder` & `DataFolder` sind gleich)
-    - `.\QSX2Config\` → wird zu `...\Total Commander\QSX2\QSX2Config\`
-    - `.\..\QSX2Config\` → wird zu `...\Total Commander\QSX2Config\`
+    - `folder for DataFolder=.\` → wird zu `...\Total Commander\QSX2\` (`PluginFolder` & `DataFolder` sind gleich)
+    - `folder for DataFolder=.\QSX2Config\` → wird zu `...\Total Commander\QSX2\QSX2Config\`
+    - `folder for DataFolder=.\..\QSX2Config\` → wird zu `...\Total Commander\QSX2Config\`
 
-### 🛡️ Ausweichoption bei fehlenden Schreibrechten
+### 🔀 Einzelne Speicherorte via `tcmatch.path.txt` umleiten
 
-Schlägt der Schreibzugriff auf das ermittelte `DataFolder` fehl, weicht das Plugin automatisch auf das temporäre Systemverzeichnis `%TEMP%` aus (z. B. `C:\Users\<username>\AppData\Local\Temp\`), um einen stabilen Betrieb zu gewährleisten.
+Statt den gesamten `DataFolder` umzuleiten, können bei Bedarf auch einzelne Speicherorte unabhängig voneinander festgelegt werden. Dazu wird für jeden Speicherort eine eigene Zeile in der `tcmatch.path.txt` angelegt:
+
+```ini
+folder for tcmatch.xml=D:\Portable\Total Commander Tools\QSX2Config\
+folder for tcmatch.default.xml=D:\Portable\Total Commander Tools\QSX2Config\
+folder for tcmatch.overwrite.xml=D:\Portable\Total Commander Tools\QSX2Config\
+folder for tcmatch.replacements.txt=D:\Portable\Total Commander Tools\QSX2Config\
+folder for tcmatch.log=.\Logs
+folder for tcmatch.bridge.log=.\Logs
+folder for BrowserProfile=%APPDATA%\QSX2\
+```
+
+Bei Datei-Einträgen wird der jeweilige Dateiname automatisch an das angegebene Verzeichnis angehängt. Für `BrowserProfile` wird entsprechend der Unterordner `BrowserProfile` verwendet.
+
+### 📋 Unterstützte Einträge
+
+Die folgenden Einträge legen fest, welche Ordner für die jeweiligen Elemente verwendet werden.
+
+| Eintrag                    | Verwendung                                                                                                                                                                                                                                                        |
+| ---                        | ---                                                                                                                                                                                                                                                               |
+| `DataFolder`               | Legt das Verzeichnis für den gesamten `DataFolder` fest.                                                                                                                                                                                                          |
+| `tcmatch.xml`              | Verzeichnis der Benutzerkonfiguration.                                                                                                                                                                                                                            |
+| `tcmatch.default.xml`      | **Zusatzfunktion:** Übernimmt die Datei `tcmatch.default.xml` aus diesem Ordner beim Start als `tcmatch.xml`, wenn diese noch nicht existiert. So kann auf Mehrbenutzersystemen eine gemeinsame Standardkonfiguration bereitgestellt werden.                      |
+| `tcmatch.overwrite.xml`    | **Zusatzfunktion:** Übernimmt die Datei `tcmatch.overwrite.xml` aus diesem Ordner bei jedem Start als `tcmatch.xml` und ersetzt damit die vorhandene Benutzerkonfiguration. So lassen sich Konfigurationen bei Bedarf auf vorgegebene Standardwerte zurücksetzen. |
+| `tcmatch.replacements.txt` | Verzeichnis der Ersetzungsregeln.                                                                                                                                                                                                                                 |
+| `tcmatch.log`              | Verzeichnis des internen Diagnoseprotokolls.                                                                                                                                                                                                                      |
+| `tcmatch.bridge.log`       | **Zusatzfunktion:** Aktiviert das Protokoll der nativen C++-Bridge. Die Datei `tcmatch.bridge.log` wird in diesem Ordner angelegt. Das Protokoll kann die Performance beeinträchtigen und sollte nach der Diagnose wieder deaktiviert werden.                     |
+| `BrowserProfile`           | Basisverzeichnis für das WebView2-Browserprofil.                                                                                                                                                                                                                  |
 
 [📖 Nach oben](#inhaltsverzeichnis)
 
@@ -1059,6 +1091,36 @@ Bei unerwartetem Verhalten (z. B. Abstürzen oder nicht passenden Suchtreffern i
 3. **Logdatei auswerten:** Den Protokoll-Detailgrad in den ⚙️ [5. Einstellungen](#einstellungen) erhöhen. Die Datei `tcmatch.log` (einsehbar im Einstellungsfenster oder im 📂 [DataFolder](#verzeichnis-umleitung)) zeichnet die Plugin-Initialisierung, Filter-Interaktionen und Fehler auf.
 4. **Gegenprobe durchführen:** Das Plugin testweise deinstallieren (📦 [6. Installation](#installation)) oder mit dem offiziellen [tcmatch-Plugin von Christian Ghisler](https://www.ghisler.ch/board/viewtopic.php?p=173110#p173110) prüfen. So lässt sich feststellen, ob die Ursache bei Total Commander oder beim Plugin liegt.
 5. **Fehler melden:** Bei Supportanfragen oder Fehlerberichten die Dateien `tcmatch.xml` und `tcmatch.log` beifügen. Wegen des Datenvolumens bei hohem Detailgrad die Logdatei vorab leeren oder nur auszugsweise senden. Sensible Daten (z. B. Pfade oder Dateinamen) vorher anonymisieren.
+
+[📖 Nach oben](#inhaltsverzeichnis)
+
+---
+
+<a id="startprobleme"></a>
+## 🚨 7.4 Startprobleme
+
+Manche Abstürze treten so früh auf, dass QSX2 gar nicht erst sichtbar wird.
+
+### 🛡️ Automatischer abgesicherter Modus
+
+Erkennt QSX2 beim nächsten Start einen vorherigen Absturz, wechselt es automatisch in den abgesicherten Modus. Dafür wird die separate Konfigurationsdatei `tcmatch.debug.xml` verwendet. Dabei werden mögliche Fehlerquellen umgangen und die Diagnose erleichtert. Alle übrigen Einstellungen werden auf ihre Standardwerte zurückgesetzt.
+
+- **Suchassistent wird deaktiviert**
+- **Maximale Protokollierung wird aktiviert**
+- **Gleitkomma-Kompatibilitätsmodus wird aktiviert**
+
+Der abgesicherte Modus bleibt aktiv, solange die Datei `tcmatch.debug.xml` existiert. Um ihn zu beenden, muss diese Datei gelöscht werden. Die automatische Aktivierung lässt sich in den Experteneinstellungen unter **Diagnose** deaktivieren.
+
+Funktioniert QSX2 im abgesicherten Modus wieder, lässt sich prüfen, ob sich der Suchassistent mit `@gui` öffnen lässt. Anschließend kann versucht werden, dort den Gleitkomma-Kompatibilitätsmodus zu deaktivieren. So lässt sich möglicherweise die Ursache des Problems eingrenzen.
+
+### 📋 Diagnoseprotokolle
+
+Für die Fehlersuche bei Startproblemen sind folgende Protokolle hilfreich:
+
+- `tcmatch.log` – Protokoll des Plugins.
+- `tcmatch.bridge.log` – optionales Protokoll der nativen C++-Bridge (siehe [6.2 Verzeichnis-Umleitung](#verzeichnis-umleitung)).
+
+Beide Dateien sollten bei Supportanfragen oder Fehlerberichten beigefügt werden. Anhand der Protokolle lässt sich möglicherweise eingrenzen, an welcher Stelle das Problem auftritt.
 
 [📖 Nach oben](#inhaltsverzeichnis)
 

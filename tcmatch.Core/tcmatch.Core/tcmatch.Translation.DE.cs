@@ -245,6 +245,8 @@
 002_010_015=Metadaten-Cache - Obergrenze für Cache-Einträge:
 002_010_016=Maximale Dateigröße für das Einlesen von ""@content"" - größere Dateien werden ignoriert (MB):
 002_010_017=Gesamter Arbeitsspeicher für den ""@content""-Cache - ältere Inhalte werden beim Erreichen des Limits verworfen (MB):
+002_010_018=Gleitkomma-Kompatibilitätsmodus aktivieren. Normalerweise nicht erforderlich.
+002_010_019=Verhindert, dass nach einem fehlgeschlagenen Start automatisch der abgesicherte Modus geladen wird.
 
 003_001_001=Dokumentation
 

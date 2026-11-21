@@ -63,16 +63,24 @@ namespace tcmatch.Core
         public static string version = "2026-10-01"; // #RELEASE
 
         // Path to files and folders
-        public static string pluginFolder;          // e.g., C:\Total Commander\QSX2\
-                                                    //       C:\Total Commander\QSX2\tcmatch.dll
-                                                    //       C:\Total Commander\QSX2\tcmatch64.dll
-                                                    //       C:\Total Commander\QSX2\tcmatch.Core.dll
-        private static string pathOverrideFilePath; //       C:\Total Commander\QSX2\tcmatch.path.txt
-        private static string pinyinFilePath;       //       C:\Total Commander\QSX2\tcmatch.pinyin.tbl
-        public static string dataFolder;            // e.g., C:\Users\username\AppData\Roaming\QSX2\
-        public static string logFilePath;           // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.log
-        private static string configFilePath;       // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.xml
-        public static string replaceFilePath;       // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.replacements.txt
+        public static string pluginFolder;             // e.g., C:\Total Commander\QSX2\
+                                                       //       C:\Total Commander\QSX2\tcmatch.dll
+                                                       //       C:\Total Commander\QSX2\tcmatch64.dll
+                                                       //       C:\Total Commander\QSX2\tcmatch.Core.dll
+        private static string pathOverrideFilePath;    //       C:\Total Commander\QSX2\tcmatch.path.txt
+        private static string pinyinFilePath;          //       C:\Total Commander\QSX2\tcmatch.pinyin.tbl
+        public static string dataFolder;               // e.g., C:\Users\username\AppData\Roaming\QSX2\
+        public static string logFilePath;              // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.log
+        public static string logFilePathNormal;        // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.log
+        public static string logFilePathTemp;          // e.g., C:\Users\username\AppData\Local\Temp\tcmatch.log
+        private static string startupSentinelFilePath; // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.startup.inprogress
+        private static string configFilePath;          // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.xml
+        private static string configFilePathNormal;    // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.xml
+        private static string configFilePathDebug;     // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.debug.xml
+        private static string configFilePathDefault;   // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.default.xml
+        private static string configFilePathOverwrite; // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.overwrite.xml
+        public static string replaceFilePath;          // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.replacements.txt
+        public static string browserProfileFolder;     // e.g., C:\Users\username\AppData\Roaming\QSX2\BrowserProfile\
 
         // Config & Runtime state settings
         public static LanguageManager languageManager = new LanguageManager();
@@ -84,6 +92,7 @@ namespace tcmatch.Core
         public static long benchmarkTotalExecutionTicks = 0;
         public static long benchmarkPluginStartTicks = 0;
         public static long benchmarkTotalStartupTicks = -1;
+        private static bool firstMatchCallHandled = false;
 
         public static string lastRawFilter { get; set; }
         public static readonly List<string> historyList = new List<string>();
@@ -142,23 +151,54 @@ namespace tcmatch.Core
             #region 2.1 Default DataFolder (%appdata%\QSX2)
             dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QSX2");
             #endregion
-            #region 2.2 Check if "PluginFolder\tcmatch.path.txt" exists and use the content to override the Default DataFolder
+            #region 2.2 Read "tcmatch.path.txt" - Legacy and individual folder redirection
+            Dictionary<string, string> folderOverrides = new Dictionary<string, string>(StringComparer.Ordinal);
+
             pathOverrideFilePath = Path.Combine(pluginFolder, "tcmatch.path.txt");
 
             if(File.Exists(pathOverrideFilePath)) {
                 Log(LoggingLevel.Level_2_Startup, $"   ├── Path override file found:".PadRight(60) + pathOverrideFilePath);
                 try {
-                    string overridePath = File.ReadAllText(pathOverrideFilePath, Encoding.UTF8).Trim();
-                    string overridePathResolved = ResolveFolderPath(overridePath);
+                    string pathOverrideContent = File.ReadAllText(pathOverrideFilePath, Encoding.UTF8).Trim();
 
-                    // Does it contain a valid and existing path?
-                    if(!string.IsNullOrWhiteSpace(overridePathResolved) && Directory.Exists(overridePathResolved)) {
-                        dataFolder = overridePathResolved;
-                        Log(LoggingLevel.Level_2_Startup, $"   │   \"tcmatch.path.txt\" contains a valid path:".PadRight(60) + overridePath);
-                        Log(LoggingLevel.Level_2_Startup, $"   │   Directory exists.".PadRight(60) + overridePathResolved);
+                    if(pathOverrideContent.Contains("folder for ")) {
+                        const string prefix = "folder for ";
+
+                        foreach(string pathOverrideLine in pathOverrideContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)) {
+                            if(!pathOverrideLine.StartsWith(prefix)) continue;
+                            int separator = pathOverrideLine.IndexOf('=');
+                            if(separator < 0) continue;
+
+                            string key = pathOverrideLine.Substring(prefix.Length, separator - prefix.Length).Trim();
+                            string value = pathOverrideLine.Substring(separator + 1).Trim();
+
+                            if(key != "DataFolder" && key != "tcmatch.xml" && key != "tcmatch.default.xml" && key != "tcmatch.overwrite.xml" && key != "tcmatch.log" && key != "tcmatch.replacements.txt" && key != "BrowserProfile") continue;
+                            if(string.IsNullOrEmpty(value)) continue;
+                            if(folderOverrides.ContainsKey(key)) continue;
+
+                            string pathOverrideResolved = ResolveFolderPath(value);
+
+                            if(!string.IsNullOrWhiteSpace(pathOverrideResolved) && Directory.Exists(pathOverrideResolved)) {
+                                folderOverrides.Add(key, pathOverrideResolved);
+                                Log(LoggingLevel.Level_2_Startup, ($"   │   Valid path override for " + key + ":").PadRight(60) + value);
+                                Log(LoggingLevel.Level_2_Startup, $"   │   Directory exists.".PadRight(60) + pathOverrideResolved);
+                            } else {
+                                Log(LoggingLevel.Level_1_Errors, ($"   │   Invalid path override for " + key + ":").PadRight(60) + value);
+                                Log(LoggingLevel.Level_1_Errors, $"   │   Error: Directory doesn't exist".PadRight(60) + pathOverrideResolved);
+                            }
+                        }
                     } else {
-                        Log(LoggingLevel.Level_2_Startup, $"   │   \"tcmatch.path.txt\" contains an invalid path:".PadRight(60) + overridePath);
-                        Log(LoggingLevel.Level_2_Startup, $"   │   Directory doesn't exist".PadRight(60) + overridePathResolved);
+                        string pathOverrideResolved = ResolveFolderPath(pathOverrideContent);
+
+                        // Does it contain a valid and existing path?
+                        if(!string.IsNullOrWhiteSpace(pathOverrideResolved) && Directory.Exists(pathOverrideResolved)) {
+                            folderOverrides.Add("DataFolder", pathOverrideResolved);
+                            Log(LoggingLevel.Level_2_Startup, $"   │   Valid legacy path override for DataFolder:".PadRight(60) + pathOverrideContent);
+                            Log(LoggingLevel.Level_2_Startup, $"   │   Directory exists.".PadRight(60) + pathOverrideResolved);
+                        } else {
+                            Log(LoggingLevel.Level_1_Errors, $"   │   Invalid legacy path override for DataFolder:".PadRight(60) + pathOverrideContent);
+                            Log(LoggingLevel.Level_1_Errors, $"   │   Error: Directory doesn't exist".PadRight(60) + pathOverrideResolved);
+                        }
                     }
                 } catch(Exception ex) {
                     Log(LoggingLevel.Level_1_Errors, $"   │   Error reading \"tcmatch.path.txt\": {ex.Message}{Environment.NewLine}{ex}");
@@ -167,27 +207,52 @@ namespace tcmatch.Core
                 Log(LoggingLevel.Level_2_Startup, $"   ├── No path override file found:".PadRight(60) + pathOverrideFilePath);
                 Log(LoggingLevel.Level_2_Startup, $"   │   Using default AppData directory as DataFolder.");
             }
-            Log(LoggingLevel.Level_2_Startup, $"   ├── DataFolder (Log and Config location):".PadRight(60) + dataFolder);
             #endregion
-            #region 3. Fallback to Temp directory if current DataFolder is not writeable
-            try {
-                if(!Directory.Exists(dataFolder)) Directory.CreateDirectory(dataFolder);
+            #region 3. Fallback to Temp directory if current DataFolder is not writeable and list final Location of DataFolder-Entries
+            string tempPath = Path.GetTempPath();
+            if(!folderOverrides.ContainsKey("DataFolder")) {
+                try {
+                    if(!Directory.Exists(dataFolder)) Directory.CreateDirectory(dataFolder);
 
-                // Active write/delete test to ensure full NTFS permissions are given
-                string writeTestFilePath = Path.Combine(dataFolder, "tcmatch.tmp");
-                if(File.Exists(writeTestFilePath)) File.Delete(writeTestFilePath);
-                File.WriteAllText(writeTestFilePath, "-");
-                if(File.Exists(writeTestFilePath)) File.Delete(writeTestFilePath);
-            } catch(Exception ex) {
-                dataFolder = Path.GetTempPath();
-                Log(LoggingLevel.Level_1_Errors,  $"   │   Error: Could not create or use data directory: {ex.Message}{Environment.NewLine}{ex}");
-                Log(LoggingLevel.Level_2_Startup, $"   │   Using fallback:".PadRight(60) + dataFolder);
+                    // Active write/delete test to ensure full NTFS permissions are given
+                    string writeTestFilePath = Path.Combine(dataFolder, "tcmatch.tmp");
+                    if(File.Exists(writeTestFilePath)) File.Delete(writeTestFilePath);
+                    File.WriteAllText(writeTestFilePath, "-");
+                    if(File.Exists(writeTestFilePath)) File.Delete(writeTestFilePath);
+                } catch(Exception ex) {
+                    Log(LoggingLevel.Level_2_Startup, $"   ├── Default DataFolder (%appdata%\\QSX2):".PadRight(60) + dataFolder);
+                    dataFolder = tempPath;
+                    Log(LoggingLevel.Level_1_Errors, $"   │   Error: Could not create or use DataFolder: {ex.Message}{Environment.NewLine}{ex}");
+                    Log(LoggingLevel.Level_2_Startup, $"   │   Using fallback:".PadRight(60) + dataFolder);
+                }
             }
+
+            Log(LoggingLevel.Level_2_Startup, $"   ├── Resolved data and resource paths:");
+
+            if(folderOverrides.ContainsKey("DataFolder")) dataFolder = folderOverrides["DataFolder"];
+            Log(LoggingLevel.Level_2_Startup, $"   │   DataFolder:".PadRight(60) + dataFolder);
+
+            configFilePathNormal = Path.Combine(folderOverrides.ContainsKey("tcmatch.xml") ? folderOverrides["tcmatch.xml"] : dataFolder, "tcmatch.xml");
+            configFilePathDebug = Path.Combine(folderOverrides.ContainsKey("tcmatch.xml") ? folderOverrides["tcmatch.xml"] : dataFolder, "tcmatch.debug.xml");
+            Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.xml:".PadRight(60) + configFilePathNormal);
+
+            configFilePathDefault = folderOverrides.ContainsKey("tcmatch.default.xml") ? Path.Combine(folderOverrides["tcmatch.default.xml"], "tcmatch.default.xml") : null;
+            if(configFilePathDefault != null) Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.default.xml:".PadRight(60) + configFilePathDefault);
+
+            configFilePathOverwrite = folderOverrides.ContainsKey("tcmatch.overwrite.xml") ? Path.Combine(folderOverrides["tcmatch.overwrite.xml"], "tcmatch.overwrite.xml") : null;
+            if(configFilePathOverwrite != null) Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.overwrite.xml:".PadRight(60) + configFilePathOverwrite);
+
+            logFilePathNormal = Path.Combine(folderOverrides.ContainsKey("tcmatch.log") ? folderOverrides["tcmatch.log"] : dataFolder, "tcmatch.log");
+            logFilePathTemp = Path.Combine(tempPath, "tcmatch.log");
+            Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.log:".PadRight(60) + logFilePathNormal);
+
+            replaceFilePath = Path.Combine(folderOverrides.ContainsKey("tcmatch.replacements.txt") ? folderOverrides["tcmatch.replacements.txt"] : dataFolder, "tcmatch.replacements.txt");
+            Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.replacements.txt:".PadRight(60) + replaceFilePath);
+
+            browserProfileFolder = Path.Combine(folderOverrides.ContainsKey("BrowserProfile") ? folderOverrides["BrowserProfile"] : dataFolder, "BrowserProfile");
+            Log(LoggingLevel.Level_2_Startup, $"   │   BrowserProfile:".PadRight(60) + browserProfileFolder);
             #endregion
             #region 4. Load Configuration
-            configFilePath = Path.Combine(dataFolder, "tcmatch.xml");
-            Log(LoggingLevel.Level_2_Startup, $"   ├── Config file:".PadRight(60) + configFilePath);
-
             // Auto-populate regional system settings directly from the active Host OS context
             string systemSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             decimalSeparatorDefaultChar = !string.IsNullOrEmpty(systemSeparator) ? systemSeparator[0] : '.';
@@ -203,7 +268,59 @@ namespace tcmatch.Core
                 }
             }
 
-            LoadConfig();
+            if(configFilePathOverwrite != null) {
+                // Replace the user configuration with the specified template on every startup.
+                try {
+                    Log(LoggingLevel.Level_2_Startup, $"   ├── Overwriting user configuration.");
+                    Log(LoggingLevel.Level_2_Startup, $"   │   Source:".PadRight(60) + configFilePathOverwrite);
+                    Log(LoggingLevel.Level_2_Startup, $"   │   Destination:".PadRight(60) + configFilePathNormal);
+
+                    File.Copy(configFilePathOverwrite, configFilePathNormal, true);
+                } catch(Exception ex) {
+                    Log(LoggingLevel.Level_1_Errors, $"   │   Error: Could not overwrite user configuration: {ex.Message}{Environment.NewLine}{ex}");
+                }
+            } else if(configFilePathDefault != null && !File.Exists(configFilePathNormal)) {
+                // Create the user configuration from the default template if it does not yet exist.
+                try {
+                    Log(LoggingLevel.Level_2_Startup, $"   ├── Creating user configuration from default template.");
+                    Log(LoggingLevel.Level_2_Startup, $"   │   Source:".PadRight(60) + configFilePathDefault);
+                    Log(LoggingLevel.Level_2_Startup, $"   │   Destination:".PadRight(60) + configFilePathNormal);
+
+                    File.Copy(configFilePathDefault, configFilePathNormal, false);
+                } catch(Exception ex) {
+                    Log(LoggingLevel.Level_1_Errors, $"   │   Error: Could not create user configuration: {ex.Message}{Environment.NewLine}{ex}");
+                }
+            }
+
+            // Detect and remove remnants from the previous startup.
+            startupSentinelFilePath = Path.Combine(dataFolder, "tcmatch.startup.inprogress");
+            bool previousStartupFailed = File.Exists(startupSentinelFilePath);
+            bool debugConfigExists = File.Exists(configFilePathDebug);
+            DeleteStartupSentinel();
+
+            if(previousStartupFailed || debugConfigExists) {
+                if(previousStartupFailed) Log(LoggingLevel.Level_1_Errors, "   ├── Error: Previous startup did not complete. Recovery required.");
+                else Log(LoggingLevel.Level_2_Startup, "   ├── Debug config from previous incomplete startup found:".PadRight(60) + configFilePathDebug);
+
+                // Always load the normal configuration first, it contains the option to disable Safe Mode entirely.
+                configFilePath = configFilePathNormal;
+                Log(LoggingLevel.Level_2_Startup, $"   │   Loading normal config:".PadRight(60) + configFilePath);
+                LoadConfig();
+
+                // Read the Safe Mode opt-out exclusively from tcmatch.xml.
+                if(config.disableSafeMode) {
+                    Log(LoggingLevel.Level_2_Startup, "   │   Safe Mode disabled by configuration. Ignoring tcmatch.debug.xml.");
+                } else {
+                    Log(LoggingLevel.Level_2_Startup, "   │   Entering Safe Mode with debug config:".PadRight(60) + configFilePathDebug);
+                    configFilePath = configFilePathDebug;
+                    LoadConfig(safeMode: previousStartupFailed);
+                }
+            } else {
+                configFilePath = configFilePathNormal;
+                Log(LoggingLevel.Level_2_Startup, $"   ├── Config file:".PadRight(60) + configFilePath);
+                LoadConfig();
+            }
+
             config.OnPostLoad();
             #endregion
             #region 5. Read "tcmatch.pinyin.tbl" if needed
@@ -213,8 +330,6 @@ namespace tcmatch.Core
             LoadPinYinDatabase();
             #endregion
             #region 6. Read "tcmatch.replacements.txt" if exists
-            replaceFilePath = Path.Combine(dataFolder, "tcmatch.replacements.txt");
-
             if(File.Exists(replaceFilePath)) {
                 Log(LoggingLevel.Level_2_Startup, $"   ├── Replacements file found:".PadRight(60) + replaceFilePath);
                 LoadReplacementsFile();
@@ -228,7 +343,7 @@ namespace tcmatch.Core
             config.PopulateViewFields_Theme();
             #endregion
             #region 7. Flush the bootstrap log into the newly initialized log file
-            logFilePath = Path.Combine(dataFolder, "tcmatch.log");
+            logFilePath = logFilePathNormal;
             Log(LoggingLevel.Level_2_Startup, "   └── Initialisation completed.");
             #endregion
         }
@@ -274,20 +389,31 @@ namespace tcmatch.Core
         /// <summary>
         /// Loads the configuration from tcmatch.xml or creates a default one if missing.
         /// </summary>
-        public static void LoadConfig()
+        public static void LoadConfig(bool safeMode = false)
         {
             lock(_ioLock) {
                 try {
-                    if(File.Exists(configFilePath)) {
+                    if(!safeMode && File.Exists(configFilePath)) {
                         var serializer = new XmlSerializer(typeof(Config));
                         using(var stream = new FileStream(configFilePath, FileMode.Open, FileAccess.Read)) {
                             config = (Config)serializer.Deserialize(stream);
                         }
                     } else {
-                        // Factory Reset / Initial creation
-                        config = new Config();
-                        SaveConfig();
-                        Log(LoggingLevel.Level_2_Startup, "   │   No config found, write default config.");
+                        if(safeMode) {
+                            // Factory Reset / Initial creation
+                            config = new Config {
+                                loggingLevel = LoggingLevel.Level_5_Function_Calls,
+                                showGui = false,
+                                allowLargeNumbers = true
+                            };
+                            Log(LoggingLevel.Level_2_Startup, "   │   Recovery mode: Create fresh tcmatch.debug.xml with defensive defaults.");
+                            SaveConfig();
+                        } else {
+                            // Factory Reset / Initial creation
+                            config = new Config();
+                            Log(LoggingLevel.Level_2_Startup, "   │   No config found, write default config.");
+                            SaveConfig();
+                        }
                     }
                 } catch(Exception ex) {
                     Log(LoggingLevel.Level_1_Errors, $"   │   Error: Could not load config: {ex.Message}{Environment.NewLine}{ex}");
@@ -312,6 +438,29 @@ namespace tcmatch.Core
                 } catch(Exception ex) {
                     Log(LoggingLevel.Level_1_Errors, $"Error: Could not write config: {ex.Message}{Environment.NewLine}{ex}");
                 }
+            }
+        }
+        #endregion
+        #region private static void CreateStartupSentinel()
+        private static void CreateStartupSentinel()
+        {
+            // Mark the first search request as in progress.
+            try {
+                Log(LoggingLevel.Level_2_Startup, "   ┌── Create startup sentinel.");
+                File.WriteAllText(startupSentinelFilePath, string.Empty);
+            } catch(Exception ex) {
+                Log(LoggingLevel.Level_1_Errors, $"Error: Could not create startup sentinel: {ex.Message}{Environment.NewLine}{ex}");
+            }
+        }
+        #endregion
+        #region private static void DeleteStartupSentinel()
+        private static void DeleteStartupSentinel()
+        {
+            try {
+                Log(LoggingLevel.Level_2_Startup, "   └── Delete startup sentinel.");
+                if(File.Exists(startupSentinelFilePath)) File.Delete(startupSentinelFilePath);
+            } catch(Exception ex) {
+                Log(LoggingLevel.Level_1_Errors, $"Error: Could not delete startup sentinel \"{startupSentinelFilePath}\": {ex.Message}{Environment.NewLine}{ex}");
             }
         }
         #endregion
@@ -541,9 +690,19 @@ namespace tcmatch.Core
                         if(config.loggingLevel >= entry.loggingLevel) {
                             byte[] encodedText = Encoding.UTF8.GetBytes(entry.formattedMessage);
 
-                            // FileShare.ReadWrite allows multiple concurrent Total Commander processes to log simultaneously
-                            using(var fs = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)) {
-                                fs.Write(encodedText, 0, encodedText.Length);
+                            try {
+                                // FileShare.ReadWrite allows multiple concurrent Total Commander processes to log simultaneously
+                                using(var fs = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)) {
+                                    fs.Write(encodedText, 0, encodedText.Length);
+                                }
+                            } catch {
+                                if(logFilePath == logFilePathTemp) throw;
+
+                                // try to write a logfile in temp
+                                logFilePath = logFilePathTemp;
+                                using(var fs = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)) {
+                                    fs.Write(encodedText, 0, encodedText.Length);
+                                }
                             }
                         }
                     }
@@ -658,6 +817,50 @@ namespace tcmatch.Core
             return result;
         }
         #endregion
+        #region public static void MatchNotify(int flags, IntPtr handle)
+        /// <summary>
+        /// Receives notifications from Total Commander about Quick Search dialog events and plugin lifecycle.
+        /// </summary>
+        /// <param name="flags">Identifies the notification event:
+        /// 0: Plugin DLL loaded.
+        /// 1..20: Quick Search dialog loaded. The value identifies the source view, using the same source view identifiers as the flags parameter of MatchFileExW:
+        ///  - 1 (FileList): Filtering the standard left or right file panel view. (focus file panel → Ctrl+S)
+        ///  - 2 (SearchResults): Filtering within the "Find Files" results window. (Find Files → Feed to listbox → Ctrl+S)
+        ///  - 3 (Synchronize): Filtering inside the "Synchronize Directories" comparison tool. (Commands → Synchronize Dirs → start typing; no filter only match; no ctrl+s)
+        ///  - 4 (History): Filtering the directory history or frequent folders dropdown window. (Alt+Down arrow → Ctrl+S)
+        ///  - 5 (TabTitles): Filtering the folder tab titles. (Ctrl+Shift+A → start typing; context menu on tab → list all tabs; context menu beside tab)
+        ///  - 6 (TabPaths): Filtering the folder tab paths. (Ctrl+Shift+A → type "*"; command "cm_SrcTabsList 1"; command "cm_SrcTabsList 3")
+        ///  - 7..20 reserved for future versions
+        /// 21: Search results cleared (search text became empty).
+        /// 22: Quick Search dialog closed.
+        /// 23: Called immediately before unloading the plugin DLL.
+        /// </param>
+        /// <param name="handle">The HWND of the Quick Search dialog associated with the notification.</param>
+        /// <remarks>
+        /// When Quick Search is opened by typing a character, the dialog-loaded notification (flags 1..20) may arrive after the first MatchFileExW call. Do not assume that this notification always precedes the first search request.
+        /// Introduced here: https://www.ghisler.ch/board/viewtopic.php?p=490592#p490592
+        /// </remarks>
+        public static void MatchNotify(int flags, IntPtr handle)
+        {
+            Log(LoggingLevel.Level_5_Function_Calls, "public static void MatchNotify(int flags, IntPtr handle)");
+
+            if(config.allowLargeNumbers) WindowHelper.AllowLargeNumbers(true);
+            try {
+                if(flags >= 1 && flags <= 20) {
+                    // 1..20: Quick Search dialog loaded.
+                    EvaluateMatch("", "", flags | 0x800);
+                } else if(flags == 21) {
+                    // 21: Search results cleared (search text became empty).
+                    EvaluateMatch("", "", 0x1 | 0x800);
+                }
+            } catch(Exception ex) {
+                Log(LoggingLevel.Level_1_Errors, $"Error evaluating MatchNotify (Flags: {flags}): {ex.Message}{Environment.NewLine}{ex}");
+            }
+            if(config.allowLargeNumbers) WindowHelper.AllowLargeNumbers(false);
+
+            if(IsLoggable(LoggingLevel.Level_3_SearchQueryPlan)) Log($"MatchNotify(int flags, IntPtr handle) - Flags: {flags}, Handle: 0x{handle.ToInt64():X}");
+        }
+        #endregion
         #region public static int MatchFileExW(string filter, string filename, int flags)
         /// <summary>
         /// Core filtering evaluation invoked by Total Commander for every single entry in the active view.
@@ -688,7 +891,17 @@ namespace tcmatch.Core
             Log(LoggingLevel.Level_5_Function_Calls, "public static int MatchFileExW(string filter, string filename, int flags)");
             int result;
 
-            //WindowHelper.AllowLargeNumbers(true);
+            // Create a sentinel for the first MatchFileExW call only.
+            bool sentinelStarted = false;
+            if(!firstMatchCallHandled) {
+                firstMatchCallHandled = true;
+                if(!config.disableSafeMode) {
+                    sentinelStarted = true;
+                    CreateStartupSentinel();
+                }
+            }
+
+            if(config.allowLargeNumbers) WindowHelper.AllowLargeNumbers(true);
             try {
                 result = EvaluateMatch(filter, filename, flags);
             } catch(Exception ex) {
@@ -696,7 +909,7 @@ namespace tcmatch.Core
 
                 result = 0; // Fallback to pass-through on crash
             }
-            //WindowHelper.AllowLargeNumbers(false);
+            if(config.allowLargeNumbers) WindowHelper.AllowLargeNumbers(false);
 
             // Performance Optimization: Only assemble readable log strings if the entry is actually going to be logged
             if(IsLoggable(LoggingLevel.Level_4_FileEvaluation)) {
@@ -733,6 +946,8 @@ namespace tcmatch.Core
 
                 Log($"MatchFileExW(Filter: {filter}, Flags: {flagsReadable}, Filename: {filename}) => {result}.");
             }
+
+            if(sentinelStarted) DeleteStartupSentinel();
 
             benchmarkEvaluationCount++;
             benchmarkTotalExecutionTicks += System.Diagnostics.Stopwatch.GetTimestamp() - benchmarkMatchFileExWStartTicks;
@@ -1803,6 +2018,13 @@ namespace tcmatch.Core
 
         // Prepared list for UI dynamic hints (Scope: Filter)
         [XmlIgnore] public List<KeyValuePair<string, string>> _stringReplacementsFilterAssistentWindowHints { get; set; } = new List<KeyValuePair<string, string>>();
+        #endregion
+        #region Startup & Recovery
+        /// <summary>Masks floating-point exceptions to allow processing of large numbers on some systems.</summary>
+        public bool allowLargeNumbers { get; set; } = false;
+
+        /// <summary>Prevents use of tcmatch.debug.xml. When enabled in tcmatch.xml, startup recovery is disabled.</summary>
+        public bool disableSafeMode { get; set; } = false;
         #endregion
         #region Performance & Caching Properties
         /// <summary> Verbosity level of internal logging framework. Warning: High verbosity slows down searches heavily. </summary>
@@ -7409,8 +7631,7 @@ namespace tcmatch.Core
 
             // Using "BrowserProfile" for transparent profile path definitions
             if(_webViewEnvironment == null) {
-                string userDataFolder = System.IO.Path.Combine(Plugin.dataFolder, "BrowserProfile");
-                _webViewEnvironment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null, userDataFolder);
+                _webViewEnvironment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null, Plugin.browserProfileFolder);
             }
 
             await webView.EnsureCoreWebView2Async(_webViewEnvironment);

@@ -245,6 +245,8 @@
 002_010_015=Metadata cache - Limit for cache entries:
 002_010_016=Maximum file size for reading ""@content"" - larger files will be ignored (MB):
 002_010_017=Total memory for ""@content"" cache - older content will be discarded when limit is reached (MB):
+002_010_018=Enable floating-point compatibility mode. Normally not required.
+002_010_019=Prevents Safe Mode from being loaded automatically after a failed startup.
 
 003_001_001=Documentation
 

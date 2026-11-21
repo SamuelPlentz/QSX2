@@ -1219,7 +1219,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding L[002_009_016]}" d:Text="Ignore accents / diacritics (e.g. 'a' matches 'ä', 'á', 'à', 'â')::" Style="{StaticResource SettingNameStyle}"/>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_009_016]}" d:Text="Ignore accents / diacritics (e.g. 'a' matches 'ä', 'á', 'à', 'â'):" Style="{StaticResource SettingNameStyle}"/>
                                 <CheckBox Grid.Column="1" IsChecked="{Binding ignoreAccents}" Unchecked="Config_Changed" Checked="Config_Changed"/>
                             </Grid>
 
@@ -1370,6 +1370,24 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{Binding L[002_010_017]}" d:Text="Total memory for &quot;@content&quot; cache - older content will be discarded when limit is reached (MB):" Style="{StaticResource SettingNameStyle}"/>
                                 <TextBox Grid.Column="1" Text="{Binding maxContentCacheMb}" LostFocus="Config_Validate_Changed" HorizontalAlignment="Left" Width="80"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_010_018]}" d:Text="Enable floating-point compatibility mode. Normally not required." Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding allowLargeNumbers}" Unchecked="Config_Changed" Checked="Config_Changed"/>
+                            </Grid>
+
+                            <Grid Style="{StaticResource SettingGridStyle}" Visibility="{Binding showExpertSettings, Converter={StaticResource BoolToVisibility}}" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding L[002_010_019]}" d:Text="Prevents Safe Mode from being loaded automatically after a failed startup." Style="{StaticResource SettingNameStyle}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding disableSafeMode}" Unchecked="Config_Changed" Checked="Config_Changed"/>
                             </Grid>
 
 
