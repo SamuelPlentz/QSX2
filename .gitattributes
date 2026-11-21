@@ -1,0 +1,20 @@
+# Language overrides
+*.cs linguist-language=C#
+*.xaml linguist-language=XML
+*.cpp linguist-language=C++
+*.h linguist-language=C++
+*.ps1 linguist-language=PowerShell
+*.md linguist-language=Markdown linguist-detectable
+
+# Exclude files from language statistics
+*.sln -linguist-detectable
+*.csproj -linguist-detectable
+*.vcxproj -linguist-detectable
+*.user -linguist-detectable
+*.filters -linguist-detectable
+*.def -linguist-detectable
+*.rc -linguist-detectable
+*.ico -linguist-detectable
+*.png -linguist-detectable
+*.inf -linguist-detectable
+*.tbl -linguist-detectable
