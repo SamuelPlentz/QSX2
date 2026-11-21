@@ -5,7 +5,7 @@
         public static readonly string languageNameEnglish = "German";
         public static readonly string languageNameLocal = "Deutsch";
         public static readonly string languageIsoCode = "de";
-        public static readonly string readmeVersion = "2026-10-01"; // #RELEASE
+        public static readonly string readmeVersion = "2026-11-21"; // #RELEASE
 
         public static readonly string rawData = @"
 001_001_001=Konfiguration

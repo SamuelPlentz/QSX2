@@ -4,7 +4,50 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## QuickSearch eXtended 2 — Version 2026-10-01
+## 📦 QuickSearch eXtended 2 — Version 2026-11-21
+
+### 🛡️ Startup, Compatibility & Diagnostics
+
+- **Startup Recovery & Safe Mode (Issue #1):** Added automatic recovery after failed startup attempts. A startup sentinel detects interrupted first search requests and activates Safe Mode on the next start, using a separate `tcmatch.debug.xml` configuration. Added an expert setting to disable automatic Safe Mode activation.
+- **Floating-Point Compatibility:** Added an optional compatibility mode to address potential floating-point exception issues.
+- **Improved Logging:** Added fallback logging to `%TEMP%` if the regular log file cannot be written.
+- **Native Bridge Logging:** Added optional diagnostic logging for the native C++ bridge via `tcmatch.bridge.log` (see Flexible Directory Redirection), helping investigate problems that occur before the C# component is initialized.
+- **Experimental MatchNotify Support:** Added and exported the `MatchNotify` callback through the C++ bridge and C# implementation. This integration is still experimental: no released Total Commander version supports it yet. Christian Ghisler has promised support in a future version.
+
+### 📂 Configuration & Directory Redirection
+
+- **Flexible Directory Redirection (Issue #6):** Renamed `AppFolder` to `PluginFolder` and extended `tcmatch.path.txt` to support independent redirection of configuration files, logs, replacement rules, and the WebView2 browser profile.
+- **Configuration Templates:** Added `tcmatch.default.xml` to provide an initial configuration and `tcmatch.overwrite.xml` to enforce a configuration on every startup.
+
+### 📐 User Interface & Usability
+
+- **Settings Window (Issue #3):** Fixed window sizing to respect the available monitor work area, ensuring that controls remain accessible. Improved initial window activation and fixed closing the window with ESC.
+
+### 📖 Documentation
+
+**Major changes:**
+
+- **Chapter 1 – Introduction:** Added light and dark mode screenshots.
+- **Chapter 4 – The Interactive Search Assistant (Issue #8):** Significantly expanded the documentation with dedicated sections explaining all Search Assistant categories, their purpose, and their interactions with the Quick Filter dialog.
+- **Chapter 6.2 – Directory Redirection (Issue #6):** Completely revised and expanded the documentation to explain `PluginFolder`, `DataFolder`, individual path overrides, configuration templates, and supported entries.
+- **Chapter 7.4 – Startup Problems (Issue #1):** Added a new section covering automatic Safe Mode recovery, troubleshooting, and diagnostic logs.
+
+**Additional corrections and improvements:**
+
+- **Chapter 2 – Search Syntax:** Corrected and clarified examples, escaping terminology, and wording.
+- **Chapter 6 – Installation:** Clarified that Total Commander must be restarted after changing the `wincmd.ini` configuration.
+- **Chapter 7.1 – Operation & Limits:** Clarified the current limitations of the Total Commander plugin interface, including notification support.
+- Updated wording, formatting, links, and examples throughout the German and English READMEs.
+
+### 🤝 Developer & Repository Improvements
+
+- **Contributor Guide:** Added `CONTRIBUTING.md` with information about translations, code structure, building, testing, and contribution guidelines.
+- **GitHub Language Detection:** Added `.gitattributes` to improve language classification and exclude project and resource files from repository statistics.
+- **Dependencies** Updated Markdig from 1.4.0 to 1.6.0. Updated Microsoft.Web.WebView2 from 1.0.4191.47 to 1.0.4370.26.
+
+---
+
+## 📦 QuickSearch eXtended 2 — Version 2026-10-01
 
 Complete ground-up rewrite in .NET / C# with modern UI architecture.
 

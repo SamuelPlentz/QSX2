@@ -11,7 +11,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute(L"Release")];
 [assembly:AssemblyCompanyAttribute(L"Philippians 3:20")];
 [assembly:AssemblyProductAttribute(L"QuickSearch eXtended 2")];
-[assembly:AssemblyCopyrightAttribute(L"Copyright © Samuel Plentz")];
+[assembly:AssemblyCopyrightAttribute(L"Copyright Samuel Plentz")];
 [assembly:AssemblyTrademarkAttribute(L"")];
 [assembly:AssemblyCultureAttribute(L"")];
 

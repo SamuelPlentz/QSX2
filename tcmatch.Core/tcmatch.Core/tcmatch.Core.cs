@@ -60,7 +60,7 @@ namespace tcmatch.Core
         public static readonly Language languageDefault = Language.English;
         #endregion
         #region Global fields
-        public static string version = "2026-10-01"; // #RELEASE
+        public static string version = "2026-11-21"; // #RELEASE
 
         // Path to files and folders
         public static string pluginFolder;             // e.g., C:\Total Commander\QSX2\
@@ -296,7 +296,7 @@ namespace tcmatch.Core
             startupSentinelFilePath = Path.Combine(dataFolder, "tcmatch.startup.inprogress");
             bool previousStartupFailed = File.Exists(startupSentinelFilePath);
             bool debugConfigExists = File.Exists(configFilePathDebug);
-            DeleteStartupSentinel();
+            if(previousStartupFailed) DeleteStartupSentinel();
 
             if(previousStartupFailed || debugConfigExists) {
                 if(previousStartupFailed) Log(LoggingLevel.Level_1_Errors, "   ├── Error: Previous startup did not complete. Recovery required.");
@@ -304,7 +304,7 @@ namespace tcmatch.Core
 
                 // Always load the normal configuration first, it contains the option to disable Safe Mode entirely.
                 configFilePath = configFilePathNormal;
-                Log(LoggingLevel.Level_2_Startup, $"   │   Loading normal config:".PadRight(60) + configFilePath);
+                Log(LoggingLevel.Level_2_Startup, $"   │   Check normal config for Safe Mode setting:".PadRight(60) + configFilePath);
                 LoadConfig();
 
                 // Read the Safe Mode opt-out exclusively from tcmatch.xml.
@@ -9156,6 +9156,7 @@ namespace tcmatch.Core
 }
 
 // Checklist for new Release:
+//  > Update Nuget-Packages
 //  > Change version string in source code above: #RELEASE
 //  > Update CHANGELOG.md
 //  > Update README.md and README.de.md (if necessary)
