@@ -4,6 +4,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <vcclr.h>
+#pragma comment(lib, "Kernel32.lib")
+#pragma comment(lib, "User32.lib")
 
 using namespace System;
 using namespace System::IO;
@@ -54,13 +56,45 @@ static void InitializeLogging()
     }
 }
 #pragma endregion
+#pragma region ShowErrorMessage - Display an error message
+static void ShowErrorMessage(String^ message)
+{
+    pin_ptr<const wchar_t> messagePtr = PtrToStringChars(message);
+    MessageBoxW(nullptr, messagePtr, L"QuickSearch eXtended 2 - Error", MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
+}
+#pragma endregion
 #pragma region ResolveAssembly - Automatically look for "tcmatch.Core.dll" in the specific directory containing "tcmatch.dll" or "tcmatch64.dll"
 static Assembly^ ResolveAssembly(Object^ sender, ResolveEventArgs^ args)
 {
     if(args->Name->StartsWith("tcmatch.Core", StringComparison::OrdinalIgnoreCase)) {
         String^ tcmatchDllDirectory = Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location);
         if(tcmatchDllDirectory != nullptr) {
-            return Assembly::LoadFrom(Path::Combine(tcmatchDllDirectory, "tcmatch.Core.dll"));
+            String^ coreDllPath = Path::Combine(tcmatchDllDirectory, "tcmatch.Core.dll");
+
+            try {
+                return Assembly::LoadFrom(coreDllPath);
+            } catch(Exception^ ex) {
+                try {
+                    String^ streamPath = coreDllPath + ":Zone.Identifier";
+                    pin_ptr<const wchar_t> streamPathPtr = PtrToStringChars(streamPath);
+                    DeleteFileW(streamPathPtr);
+                    return Assembly::LoadFrom(coreDllPath);
+                } catch(Exception^ retryEx) {
+                    if(loggingActive) {
+                        Log(ex->ToString());
+                        Log(retryEx->ToString());
+                    }
+
+                    ShowErrorMessage(
+                        "Could not load tcmatch.Core.dll. The DLL may be marked as downloaded from the Internet (Zone.Identifier).\r\n\r\n"
+                        "QSX2 has attempted to remove this security marker automatically.\r\n\r\n"
+                        "Please restart Total Commander. In most cases, this should resolve the problem.\r\n\r\n"
+                        "If the problem persists, open the PluginFolder, right-click tcmatch.Core.dll -> Properties -> check the Unblock box at the bottom if available and click Apply.\r\n\r\n"
+                        "If the problem still persists, please report it and include the tcmatch.bridge.log file.\r\n\r\n"
+                        "Error:\r\n" + ex->Message
+                    );
+                }
+            }
         }
     }
     return nullptr;
