@@ -254,6 +254,8 @@
 003_002_002=Version ""{0} {1}"" anzeigen
 003_002_003=# ❌ Dokumentation fehlt\n\n**Datei nicht gefunden:**\n\n```{0}```
 003_002_004=# ❌ Dokumentation fehlt\n\n**Fehler beim Einlesen der Datei:**\n\n```{0}```\n\n**Fehlermeldung:**\n\n```\n{1}\n```
+003_002_005=WebView2 konnte nicht initialisiert werden.
+003_002_006=Online-Version öffnen
 
 004_001_001=Logdatei
 
