@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xaml;
@@ -6646,6 +6647,27 @@ namespace tcmatch.Core
             }
         }
         #endregion
+        #region public static void LoadIcon(Window window, string iconName)
+        /// <summary>
+        /// Loads an embedded Icon resource and use it in the specified Window.
+        /// </summary>
+        public static void LoadIcon(Window window, string iconName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+
+            using(Stream stream = assembly.GetManifestResourceStream(iconName)) {
+                if(stream == null) throw new FileNotFoundException($"The embedded Icon resource '{iconName}' could not be found.");
+
+                BitmapFrame icon = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+
+                // Set native window icon (taskbar and Alt+Tab)
+                window.Icon = icon;
+
+                // Set WPF-UI title bar icon
+                if(window.FindName("TitleBar") is Wpf.Ui.Controls.TitleBar titleBar) titleBar.Icon = new Wpf.Ui.Controls.ImageIcon { Source = icon };
+            }
+        }
+        #endregion
         #region public static async Task<Wpf.Ui.Controls.MessageBoxResult> ShowThemedMessageBox(Window owner, string text, string title, Wpf.Ui.Controls.SymbolRegular symbol, string primaryButtonText, string closeButtonText)
         public static async Task<Wpf.Ui.Controls.MessageBoxResult> ShowThemedMessageBox(Window owner, string text, string title, Wpf.Ui.Controls.SymbolRegular symbol, string primaryButtonText, string closeButtonText)
         {
@@ -6720,6 +6742,7 @@ namespace tcmatch.Core
         private bool _logFileIsLoaded = false;
         private bool _personalIsLoaded = false;
         private bool _personalShowEnglishOverride = false;
+        private bool _webViewInitializationFailed = false;
         private Microsoft.Web.WebView2.Core.CoreWebView2Environment _webViewEnvironment;
 
         // Basic actions
@@ -6748,6 +6771,7 @@ namespace tcmatch.Core
             searchAssistantWindow.config = config;
 
             WindowHelper.LoadXAML(this, "tcmatch.Core.ConfigWindow.xaml");
+            WindowHelper.LoadIcon(this, "tcmatch.Core.QSX2.ico");
             config.PopulateViewFields_CurrentWindow_Theme(null, this);
 
             #region Adjust initial window size to available screen space
@@ -7493,6 +7517,7 @@ namespace tcmatch.Core
         #region private async void LoadDocumentation()
         private async void LoadDocumentation()
         {
+            if(_webViewInitializationFailed) { DocumentationShowWebViewUnavailable(); return; }
             if(!(this.FindName("DocWebView") is Microsoft.Web.WebView2.Wpf.WebView2 docWebView)) return;
 
             // 1. Determine the language to load and to toggle
@@ -7533,6 +7558,7 @@ namespace tcmatch.Core
 
             // 5. Initialize browser engine and navigate
             await InitializeWebViewOnceAsync(docWebView);
+            if(_webViewInitializationFailed) { DocumentationShowWebViewUnavailable(); return; }
             docWebView.NavigateToString(htmlContent);
         }
         #endregion
@@ -7627,30 +7653,46 @@ namespace tcmatch.Core
         /// </summary>
         private async Task InitializeWebViewOnceAsync(Microsoft.Web.WebView2.Wpf.WebView2 webView)
         {
-            if(webView.CoreWebView2 != null) return;
+            try {
+                if(webView.CoreWebView2 != null) return;
 
-            // Using "BrowserProfile" for transparent profile path definitions
-            if(_webViewEnvironment == null) {
-                _webViewEnvironment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null, Plugin.browserProfileFolder);
+                // Using "BrowserProfile" for transparent profile path definitions
+                if(_webViewEnvironment == null) {
+                    _webViewEnvironment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null, Plugin.browserProfileFolder);
+                }
+
+                await webView.EnsureCoreWebView2Async(_webViewEnvironment);
+
+                // Forward external web links directly to the default OS browser app context
+                webView.CoreWebView2.NavigationStarting += (s, e) => {
+                    if(e.Uri.StartsWith("data:") || e.Uri == "about:blank") return;
+
+                    e.Cancel = true;
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo {
+                        FileName = e.Uri,
+                        UseShellExecute = true
+                    });
+                };
+            } catch(Exception ex) {
+                Plugin.Log(LoggingLevel.Level_1_Errors, $"Error: Could not initialize WebView2: {ex.Message}{Environment.NewLine}{ex}");
+                _webViewInitializationFailed = true;
             }
-
-            await webView.EnsureCoreWebView2Async(_webViewEnvironment);
-
-            // Forward external web links directly to the default OS browser app context
-            webView.CoreWebView2.NavigationStarting += (s, e) => {
-                if(e.Uri.StartsWith("data:") || e.Uri == "about:blank") return;
-
-                e.Cancel = true;
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo {
-                    FileName = e.Uri,
-                    UseShellExecute = true
-                });
-            };
+        }
+        #endregion
+        #region private void OpenGitHubRepository()
+        private void OpenGitHubRepository()
+        {
+            try {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = "https://github.com/SamuelPlentz/QSX2", UseShellExecute = true });
+            } catch(Exception ex) {
+                Plugin.Log(LoggingLevel.Level_1_Errors, $"Error: Could not open QSX2 GitHub repository: {ex}");
+            }
         }
         #endregion
         #region private void DocumentationToggleLanguage_Click(object sender, RoutedEventArgs e)
         private void DocumentationToggleLanguage_Click(object sender, RoutedEventArgs e)
         {
+            if(_webViewInitializationFailed) { OpenGitHubRepository(); return; }
             _documentationShowEnglishOverride = !_documentationShowEnglishOverride;
             LoadDocumentation();
         }
@@ -7660,6 +7702,20 @@ namespace tcmatch.Core
         {
             _documentationIsLoaded = false;
             _documentationShowEnglishOverride = false;
+        }
+        #endregion
+        #region private void DocumentationShowWebViewUnavailable()
+        private void DocumentationShowWebViewUnavailable()
+        {
+            config.viewDocumentationCurrentLanguage = config.L[003_002_005] /* WebView2 could not be initialized. */;
+            config.OnPropertyChanged(nameof(config.viewDocumentationCurrentLanguage));
+
+            config.viewDocumentationToggleLanguage_NewLanguage = config.L[003_002_006] /* Open online version */;
+
+            config.OnPropertyChanged(nameof(config.viewDocumentationToggleLanguage_NewLanguage));
+
+            config.viewDocumentationToggleLanguage_Visibility = Visibility.Visible;
+            config.OnPropertyChanged(nameof(config.viewDocumentationToggleLanguage_Visibility));
         }
         #endregion
 
@@ -7763,6 +7819,7 @@ namespace tcmatch.Core
         #region private async void LoadPersonal()
         private async void LoadPersonal()
         {
+            if(_webViewInitializationFailed) { PersonalShowWebViewUnavailable(); return; }
             if(!(this.FindName("PersonalWebView") is Microsoft.Web.WebView2.Wpf.WebView2 personalWebView)) return;
 
             // 1. Determine the language to load and to toggle
@@ -7802,12 +7859,14 @@ namespace tcmatch.Core
 
             // 5. Initialize browser engine and navigate
             await InitializeWebViewOnceAsync(personalWebView);
+            if(_webViewInitializationFailed) { PersonalShowWebViewUnavailable(); return; }
             personalWebView.NavigateToString(htmlContent);
         }
         #endregion
         #region private void PersonalToggleLanguage_Click(object sender, RoutedEventArgs e)
         private void PersonalToggleLanguage_Click(object sender, RoutedEventArgs e)
         {
+            if(_webViewInitializationFailed) { OpenGitHubRepository(); return; }
             _personalShowEnglishOverride = !_personalShowEnglishOverride;
             LoadPersonal();
         }
@@ -7817,6 +7876,19 @@ namespace tcmatch.Core
         {
             _personalIsLoaded = false;
             _personalShowEnglishOverride = false;
+        }
+        #endregion
+        #region private void PersonalShowWebViewUnavailable()
+        private void PersonalShowWebViewUnavailable()
+        {
+            config.viewPersonalCurrentLanguage = config.L[003_002_005] /* WebView2 could not be initialized. */;
+            config.OnPropertyChanged(nameof(config.viewPersonalCurrentLanguage));
+
+            config.viewPersonalToggleLanguage_NewLanguage = config.L[003_002_006] /* Open online version */;
+            config.OnPropertyChanged(nameof(config.viewPersonalToggleLanguage_NewLanguage));
+
+            config.viewPersonalToggleLanguage_Visibility = Visibility.Visible;
+            config.OnPropertyChanged(nameof(config.viewPersonalToggleLanguage_Visibility));
         }
         #endregion
     }
@@ -8563,7 +8635,7 @@ namespace tcmatch.Core
                 content = new TextBlock { Text = text ?? string.Empty, VerticalAlignment = VerticalAlignment.Center };
             }
 
-            Button button = new Button { Content = content, ToolTip = toolTip, Style = buttonStyles[buttonStyle] };
+            Button button = new Button { Content = content, ToolTip = string.IsNullOrEmpty(toolTip) ? null : new TextBlock { Text = toolTip, TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.Wrap }, Style = buttonStyles[buttonStyle] };
             if(margin.HasValue) button.Margin = margin.Value;
             #endregion
             #region Attach Click Actions
@@ -8708,7 +8780,8 @@ namespace tcmatch.Core
             var chevronIcon = new Wpf.Ui.Controls.SymbolIcon { Symbol = chevronSymbol, FontSize = 16, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(2 /* left */, 0 /* top */, 0 /* right */, 0 /* bottom */) };
             panel.Children.Add(chevronIcon);
 
-            Button scopeButton = new Button { Content = panel, ToolTip = toolTip, Style = buttonStyles[ButtonStyle.Scope], Tag = buttons, Margin = new Thickness(buttonWrapPanel.Children.Count != 0 ? 10 : 0 /* left */, 0 /* top */, 0 /* right */, 0 /* bottom */) };
+            Button scopeButton = new Button { Content = panel, ToolTip = string.IsNullOrEmpty(toolTip) ? null : new TextBlock { Text = toolTip, TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.Wrap },
+                Style = buttonStyles[ButtonStyle.Scope], Tag = buttons, Margin = new Thickness(buttonWrapPanel.Children.Count != 0 ? 10 : 0 /* left */, 0 /* top */, 0 /* right */, 0 /* bottom */) };
 
             // Initialen Status setzen
             SetGroupVisibility(buttons, isInitiallyVisible);
@@ -9132,7 +9205,10 @@ namespace tcmatch.Core
         private void OpenConfig()
         {
             try {
-                ConfigWindow configWindow = new ConfigWindow(this) { Owner = this };
+                // Disable SearchAssistantWindow TopMost when ConfigWindow is open
+                Topmost = false;
+
+                ConfigWindow configWindow = new ConfigWindow(this) { Owner = this, ShowInTaskbar = true, Topmost = false };
                 Plugin.configWindow = configWindow;
 
                 // Set the guard flag before opening the modal dialog
@@ -9148,6 +9224,9 @@ namespace tcmatch.Core
                 // Safely reset the flag as soon as the modal window loop exits
                 Plugin.configWindow = null;
                 isConfigOpen = false;
+
+                // Restore SearchAssistantWindow TopMost when ConfigWindow is closed
+                Topmost = true;
             }
         }
         #endregion

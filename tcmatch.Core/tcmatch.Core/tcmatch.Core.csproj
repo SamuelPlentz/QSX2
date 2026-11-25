@@ -82,6 +82,9 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="QSX2.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(SolutionDir)..\data\BuildAndDeploy.ps1" "$(ConfigurationName)" "tcmatch.Core"</PostBuildEvent>

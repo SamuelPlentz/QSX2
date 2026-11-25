@@ -319,7 +319,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ui:TitleBar Grid.Row="0" Title="{Binding L[001_001_001]}" d:Title="QuickSearch eXtended 2 - Configuration" />
+        <ui:TitleBar x:Name="TitleBar" Grid.Row="0" Title="{Binding L[001_001_001]}" d:Title="QuickSearch eXtended 2 - Configuration" />
 
         <Grid Grid.Row="1" Margin="12">
             <Grid.RowDefinitions>
