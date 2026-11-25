@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="tcmatch.Core.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="tcmatch.Translation.RU.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ConfigWindow.xaml">

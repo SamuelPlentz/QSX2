@@ -1080,7 +1080,8 @@ namespace tcmatch.Core
     public enum Language
     {
         English,
-        German
+        German,
+        Russian
     }
     #endregion
     #region LanguageDefinition Class
@@ -1541,7 +1542,8 @@ namespace tcmatch.Core
         {
             availableLanguages = new Dictionary<Language, LanguageDefinition> {
                 { Language.English, new LanguageDefinition { language = Language.English, languageNameEnglish = TranslationEN.languageNameEnglish, languageNameLocal = TranslationEN.languageNameLocal, languageIsoCode = TranslationEN.languageIsoCode, readmeVersion = TranslationEN.readmeVersion, personalNote = TranslationEN.personalNote, rawData = TranslationEN.rawData } },
-                { Language.German,  new LanguageDefinition { language = Language.German,  languageNameEnglish = TranslationDE.languageNameEnglish, languageNameLocal = TranslationDE.languageNameLocal, languageIsoCode = TranslationDE.languageIsoCode, readmeVersion = TranslationDE.readmeVersion, personalNote = TranslationDE.personalNote, rawData = TranslationDE.rawData } }
+                { Language.German,  new LanguageDefinition { language = Language.German,  languageNameEnglish = TranslationDE.languageNameEnglish, languageNameLocal = TranslationDE.languageNameLocal, languageIsoCode = TranslationDE.languageIsoCode, readmeVersion = TranslationDE.readmeVersion, personalNote = TranslationDE.personalNote, rawData = TranslationDE.rawData } },
+                { Language.Russian, new LanguageDefinition { language = Language.Russian, languageNameEnglish = TranslationRU.languageNameEnglish, languageNameLocal = TranslationRU.languageNameLocal, languageIsoCode = TranslationRU.languageIsoCode, readmeVersion = TranslationRU.readmeVersion, personalNote = TranslationRU.personalNote, rawData = TranslationRU.rawData } }
             };
         }
     }

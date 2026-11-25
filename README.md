@@ -1140,6 +1140,7 @@ This project thrives on the commitment of its community. A heartfelt thank you g
 | **Further Development**     | You?          |
 | **Translation (DE)**        | Samuel Plentz |
 | **Translation (EN)**        | Samuel Plentz |
+| **Translation (RU)**        | AntonyD       |
 | **Theme (Light)**           | Samuel Plentz |
 | **Theme (Dark)**            | Samuel Plentz |
 

@@ -348,6 +348,7 @@
                                 <ComboBox Grid.Column="1" SelectedValue="{Binding language}" SelectedValuePath="Tag" SelectionChanged="Config_Language_SelectionChanged">
                                     <ComboBoxItem Content="English" Tag="{x:Static local:Language.English}"/>
                                     <ComboBoxItem Content="German - Deutsch" Tag="{x:Static local:Language.German}"/>
+                                    <ComboBoxItem Content="Russian - Русский" Tag="{x:Static local:Language.Russian}"/>
                                 </ComboBox>
                             </Grid>
 

@@ -1140,6 +1140,7 @@ Dieses Projekt lebt vom Engagement seiner Community. Ein herzliches Dankeschön 
 | **Weitere Entwicklung**     | Du?           |
 | **Übersetzung (DE)**        | Samuel Plentz |
 | **Übersetzung (EN)**        | Samuel Plentz |
+| **Übersetzung (RU)**        | AntonyD       |
 | **Theme (Light)**           | Samuel Plentz |
 | **Theme (Dark)**            | Samuel Plentz |
 
