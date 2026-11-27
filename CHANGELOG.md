@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ## 📦 QuickSearch eXtended 2 — Version 2026-11-27
 
+❤️ Special thanks to AntonyD for contributing the Russian translation!
+
 ### 🛡️ Startup, Compatibility & Diagnostics
 
 - **Mark of the Web Recovery:** Added automatic recovery when loading `tcmatch.Core.dll` fails due to a Windows security mark. QSX2 attempts to remove the mark. If loading still fails, an error message provides troubleshooting instructions, including manual unblocking.
