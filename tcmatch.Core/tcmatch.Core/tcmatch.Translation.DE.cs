@@ -375,6 +375,8 @@
 100_003_004=Langsame Filter-Auswertung (Werte vom vorherigen Suchdurchgang)! {0} Einträge in {1} ms ausgewertet ({2} ms/Eintrag). Plugin-Startdauer: {3} ms. Mögliche Ursachen: Umfangreiches Logging, Suche in Dateiinhalten/WDX-Feldern oder deaktivierter Cache.
 100_003_010=Logging aktiv
 100_003_011=Umfangreiches Logging ist aktiviert. Dies kann die Suchgeschwindigkeit spürbar verringern. Bitte in den Einstellungen deaktivieren oder reduzieren, wenn es nicht benötigt wird.
+100_003_012=Bridge-Logging aktiv
+100_003_013=Das zusätzliche Logging der nativen C++-Bridge ist aktiviert. Dies kann die Suchgeschwindigkeit spürbar verringern. Bitte die entsprechende Definition in der Datei tcmatch.path.txt entfernen, wenn das Logging nicht benötigt wird.
 
 100_004_001=Maskierung aktiv
 100_004_002=Textblock aktiv

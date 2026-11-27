@@ -653,7 +653,7 @@ For bulk replacements or direct editing in a text editor, the file `tcmatch.repl
 
 - The file is **UTF-8 encoded**.
 - A replacement rule is defined line-by-line, separated by tabs: `[Scope]` → **TAB** → `[Search term]` → **TAB** → `[Replacement text]`
-- Lines without a tab character are ignored as comments.
+- **Disabling Rules & Comments:** To temporarily disable a rule, any characters can be placed before the scope identifier, for example `--`. Since only `1`, `2`, `3`, and `4` are recognized as valid scope identifiers, the rule will not be applied. The line can therefore also be used as a comment. Lines without the two required tab characters are also ignored.
 - Changes are automatically reloaded on plugin startup and whenever settings are saved.
 
 **Example file for the rules mentioned above** (`→` represents a tab character):
@@ -928,7 +928,7 @@ Before installing the plugin, ensure that the system meets the following prerequ
 ### Installation Procedure
 
 1. **Download:** Download the archive [QSX2 ####-##-##.zip](https://github.com/SamuelPlentz/QSX2/releases).
-2. **Restart Total Commander (for updates):** If an older plugin version has been used since Total Commander was last launched, restarting Total Commander releases the file locks on the DLLs (provided Quick Search has not been opened since).
+2. **Restart Total Commander (for updates):** If QSX2 has been used since Total Commander was last started, Total Commander must be fully closed and restarted before the update so that the file locks on the DLLs are released. After restarting, do not open the Quick Filter again until the update is complete. Otherwise, the DLLs will be loaded and locked again.
 3. **Automatic Installation:** Open the `QSX2.zip` file inside Total Commander with `Enter`. The plugin will automatically be installed in the Total Commander subfolder `QSX2` via the internal dialog.
 4. **Configuration (`wincmd.ini`):** For initial installation, add or adjust the following keys under the `[Configuration]` section in `wincmd.ini`. **Restart Total Commander afterwards** for the changes to take effect.
 
@@ -994,6 +994,8 @@ By default, the `DataFolder` is located in the roaming user profile:
 
 `%APPDATA%\QSX2\` (e.g. `C:\Users\<username>\AppData\Roaming\QSX2\`)
 
+> 💡 In a multi-user environment, each Windows user can store their personal settings separately.
+
 ### 🛡️ Fallback for Missing Write Permissions
 
 If the default directory in the roaming user profile cannot be created or written to, the plugin automatically falls back to `%TEMP%` (e.g. `C:\Users\<username>\AppData\Local\Temp\`).
@@ -1004,7 +1006,26 @@ To store the `DataFolder` in a different location, a file named `tcmatch.path.tx
 
 If this file contains a valid path definition `folder for DataFolder=...`, QSX2 uses the specified directory as the `DataFolder`. This replaces the default path `%APPDATA%\QSX2\`.
 
+**Especially for portable installations**, the entire data set can be stored directly in the plugin directory. This requires just a single line:
+
+```text
+folder for DataFolder=.\
+```
+
+This stores the entire configuration together with the plugin files in the `PluginFolder`. QSX2 must have write permissions there.
+
+### 📄 Structure and Syntax of `tcmatch.path.txt`
+
+- The file is **UTF-8 encoded**.
+- Each definition must be on a separate line.
+- A valid definition has the format `folder for [Entry]=[Path]`.
+- Lines that do not begin with a valid definition are ignored. Prefix characters (such as `--`) can therefore be used to temporarily disable a definition.
+- Paths must **not** be enclosed in quotation marks, even if they contain spaces.
+- Environment variables are supported. Relative paths are resolved relative to the `PluginFolder`.
+- If the specified target directory does not exist, the definition is ignored. QSX2 does not create target directories automatically.
+
 Examples of possible path specifications in `tcmatch.path.txt`:
+
 - **Absolute path:** `folder for DataFolder=D:\Portable\Total Commander Tools\QSX2Config\`
 - **With environment variables:** `folder for DataFolder=%COMMANDER_PATH%\QSX2\Config\`
 - **Relative to the `PluginFolder`:**
@@ -1016,14 +1037,15 @@ Examples of possible path specifications in `tcmatch.path.txt`:
 
 Instead of redirecting the entire `DataFolder`, individual storage locations can also be specified independently as needed. To do this, a separate line is added to `tcmatch.path.txt` for each storage location:
 
-```ini
+```text
 folder for tcmatch.xml=D:\Portable\Total Commander Tools\QSX2Config\
 folder for tcmatch.default.xml=D:\Portable\Total Commander Tools\QSX2Config\
 folder for tcmatch.overwrite.xml=D:\Portable\Total Commander Tools\QSX2Config\
 folder for tcmatch.replacements.txt=D:\Portable\Total Commander Tools\QSX2Config\
 folder for tcmatch.log=.\Logs
 folder for tcmatch.bridge.log=.\Logs
-folder for BrowserProfile=%APPDATA%\QSX2\
+folder for BrowserProfile=%TEMP%\
+folder for WebView2Runtime=D:\Portable\WebView2\FixedVersionRuntime\
 ```
 
 For file entries, the respective file name is automatically appended to the specified directory. For `BrowserProfile`, the `BrowserProfile` subdirectory is used accordingly.
@@ -1032,16 +1054,17 @@ For file entries, the respective file name is automatically appended to the spec
 
 The following entries specify which folders are used for the respective items.
 
-| Entry                      | Usage                                                                                                                                                                                                                                                 |
-| ---                        | ---                                                                                                                                                                                                                                                   |
-| `DataFolder`               | Specifies the directory for the entire `DataFolder`.                                                                                                                                                                                                  |
-| `tcmatch.xml`              | Directory for the user configuration.                                                                                                                                                                                                                 |
-| `tcmatch.default.xml`      | **Additional feature:** Uses the file `tcmatch.default.xml` from this folder as `tcmatch.xml` on startup, if it does not already exist. This allows a shared default configuration to be provided on multi-user systems.                              |
-| `tcmatch.overwrite.xml`    | **Additional feature:** Uses the file `tcmatch.overwrite.xml` from this folder as `tcmatch.xml` on every startup, thereby replacing the existing user configuration. This allows configurations to be reset to predefined default values when needed. |
-| `tcmatch.replacements.txt` | Directory for the replacement rules.                                                                                                                                                                                                                  |
-| `tcmatch.log`              | Directory for the internal diagnostic log.                                                                                                                                                                                                            |
-| `tcmatch.bridge.log`       | **Additional feature:** Enables logging for the native C++ bridge. The file `tcmatch.bridge.log` is created in this folder. The log can affect performance and should be disabled again after troubleshooting.                                        |
-| `BrowserProfile`           | Base directory for the WebView2 browser profile.                                                                                                                                                                                                      |
+| Entry                      | Usage                                                                                                                                                                                                                                                               |
+| ---                        | ---                                                                                                                                                                                                                                                                 |
+| `DataFolder`               | Specifies the directory for the entire `DataFolder`.                                                                                                                                                                                                                |
+| `tcmatch.xml`              | Directory for the user configuration.                                                                                                                                                                                                                               |
+| `tcmatch.default.xml`      | **Additional feature:** Uses the file `tcmatch.default.xml` from this folder as `tcmatch.xml` on startup, if it does not already exist. This allows a shared default configuration to be provided on multi-user systems.                                            |
+| `tcmatch.overwrite.xml`    | **Additional feature:** Uses the file `tcmatch.overwrite.xml` from this folder as `tcmatch.xml` on every startup, thereby replacing the existing user configuration. This allows configurations to be reset to predefined default values when needed.               |
+| `tcmatch.replacements.txt` | Directory for the replacement rules.                                                                                                                                                                                                                                |
+| `tcmatch.log`              | Directory for the internal diagnostic log.                                                                                                                                                                                                                          |
+| `tcmatch.bridge.log`       | **Additional feature:** Enables logging for the native C++ bridge. The file `tcmatch.bridge.log` is created in this folder. The log can affect performance and should be disabled again after troubleshooting.                                                      |
+| `BrowserProfile`           | Base directory for the WebView2 browser profile used by the integrated documentation.                                                                                                                                                                               |
+| `WebView2Runtime`          | **Optional:** Directory containing a locally deployed Fixed Version of the Microsoft WebView2 Runtime. Normally not required, as WebView2 automatically searches for an installed Runtime. For portable installations, a custom Runtime path can be specified here. |
 
 [📖 Back to top](#table-of-contents)
 
@@ -1089,8 +1112,9 @@ In case of unexpected behavior (e.g., crashes or non-matching search results in 
 1. **Check Search Structure:** Expand the search structure in the ⚙️ [5. Settings](#settings) of the search assistant and then check in the **tooltips** how the term is interpreted. Rebuild the search text character by character to track each change in the filter logic.
 2. **Test Default Configuration:** Reset the plugin to default values in the ⚙️ [5. Settings](#settings) to rule out misconfigurations. Backing up `tcmatch.xml` in the 📂 [DataFolder](#directory-redirection) beforehand is recommended.
 3. **Analyze Log File:** Increase the log detail level in the ⚙️ [5. Settings](#settings). The `tcmatch.log` file (viewable in the settings window or in the 📂 [DataFolder](#directory-redirection)) records plugin initialization, filter interactions, and errors.
-4. **Cross-Check:** Uninstall the plugin temporarily (📦 [6. Installation](#installation)) or test with the official [tcmatch plugin by Christian Ghisler](https://www.ghisler.ch/board/viewtopic.php?p=173110#p173110). This determines whether the cause lies with Total Commander or the plugin.
-5. **Report Errors:** Attach `tcmatch.xml` and `tcmatch.log` files when making support requests or bug reports. Due to data volume at high detail levels, clear the log file beforehand or send only extracts. Anonymize sensitive data (e.g., paths or filenames) beforehand.
+4. **Enable Additional Bridge Logging:** For further diagnostic information, the log of the native C++ bridge can also be enabled. Instructions for enabling `tcmatch.bridge.log` can be found under 📂 [6.2 Directory Redirection](#directory-redirection). Additional logging should be disabled again once troubleshooting is complete.
+5. **Cross-Check:** Uninstall the plugin temporarily (📦 [6. Installation](#installation)) or test with the official [tcmatch plugin by Christian Ghisler](https://www.ghisler.ch/board/viewtopic.php?p=173110#p173110). This helps determine whether the cause lies with Total Commander or the plugin.
+6. **Report Errors:** When submitting bug reports, attach the files `tcmatch.xml` and `tcmatch.log`. If available, also include `tcmatch.bridge.log`. To reduce the amount of data when using a high logging level, clear the log files beforehand or include only relevant extracts. Anonymize sensitive information (e.g. paths or file names) beforehand.
 
 [📖 Back to top](#table-of-contents)
 
@@ -1113,12 +1137,24 @@ Safe Mode remains active as long as the file `tcmatch.debug.xml` exists. To exit
 
 If QSX2 works again in Safe Mode, it can be checked whether the Search Assistant can be opened using `@gui`. Afterwards, an attempt can be made to disable the floating-point compatibility mode there. This may help narrow down the cause of the problem.
 
+### 🔐 Windows Security Mark
+
+Windows can attach a security mark (*Mark of the Web*) to downloaded files. Such a mark can cause loading errors with `tcmatch.Core.dll`.
+
+This problem normally does not occur when installing through Total Commander's internal ZIP installer. However, if the DLL is manually copied or extracted from a downloaded archive, the security mark may be retained.
+
+If `tcmatch.Core.dll` cannot be loaded for this reason, QSX2 automatically attempts to remove the security mark on startup. If this attempt fails, the mark can be removed manually:
+
+1. In the plugin directory, right-click `tcmatch.Core.dll` and select **Properties**.
+2. On the **General** tab, look for the **Unblock** option at the bottom. This option is only displayed if the file is actually marked accordingly.
+3. If the option is displayed, enable it and click **Apply**.
+
 ### 📋 Diagnostic Logs
 
 The following logs are useful for troubleshooting startup problems:
 
 - `tcmatch.log` – Plugin log.
-- `tcmatch.bridge.log` – Optional log of the native C++ bridge (see [6.2 Directory Redirection](#directory-redirection)).
+- `tcmatch.bridge.log` – Optional log of the native C++ bridge (see 📂 [6.2 Directory Redirection](#directory-redirection)).
 
 Both files should be attached to support requests or bug reports. The log entries may help identify where the problem occurs.
 

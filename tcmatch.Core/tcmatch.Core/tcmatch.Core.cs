@@ -74,6 +74,7 @@ namespace tcmatch.Core
         public static string logFilePath;              // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.log
         public static string logFilePathNormal;        // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.log
         public static string logFilePathTemp;          // e.g., C:\Users\username\AppData\Local\Temp\tcmatch.log
+        public static string bridgeLogFilePath;        // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.bridge.log
         private static string startupSentinelFilePath; // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.startup.inprogress
         private static string configFilePath;          // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.xml
         private static string configFilePathNormal;    // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.xml
@@ -82,6 +83,7 @@ namespace tcmatch.Core
         private static string configFilePathOverwrite; // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.overwrite.xml
         public static string replaceFilePath;          // e.g., C:\Users\username\AppData\Roaming\QSX2\tcmatch.replacements.txt
         public static string browserProfileFolder;     // e.g., C:\Users\username\AppData\Roaming\QSX2\BrowserProfile\
+        public static string webView2RuntimeFolder;    // e.g., C:\Portable\WebView2\FixedVersionRuntime\
 
         // Config & Runtime state settings
         public static LanguageManager languageManager = new LanguageManager();
@@ -173,7 +175,7 @@ namespace tcmatch.Core
                             string key = pathOverrideLine.Substring(prefix.Length, separator - prefix.Length).Trim();
                             string value = pathOverrideLine.Substring(separator + 1).Trim();
 
-                            if(key != "DataFolder" && key != "tcmatch.xml" && key != "tcmatch.default.xml" && key != "tcmatch.overwrite.xml" && key != "tcmatch.log" && key != "tcmatch.replacements.txt" && key != "BrowserProfile") continue;
+                            if(key != "DataFolder" && key != "tcmatch.xml" && key != "tcmatch.default.xml" && key != "tcmatch.overwrite.xml" && key != "tcmatch.log" && key != "tcmatch.bridge.log" && key != "tcmatch.replacements.txt" && key != "BrowserProfile" && key != "WebView2Runtime") continue;
                             if(string.IsNullOrEmpty(value)) continue;
                             if(folderOverrides.ContainsKey(key)) continue;
 
@@ -247,11 +249,17 @@ namespace tcmatch.Core
             logFilePathTemp = Path.Combine(tempPath, "tcmatch.log");
             Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.log:".PadRight(60) + logFilePathNormal);
 
+            bridgeLogFilePath = folderOverrides.ContainsKey("tcmatch.bridge.log") ? Path.Combine(folderOverrides["tcmatch.bridge.log"], "tcmatch.bridge.log") : null;
+            if(bridgeLogFilePath != null) Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.bridge.log:".PadRight(60) + bridgeLogFilePath);
+
             replaceFilePath = Path.Combine(folderOverrides.ContainsKey("tcmatch.replacements.txt") ? folderOverrides["tcmatch.replacements.txt"] : dataFolder, "tcmatch.replacements.txt");
             Log(LoggingLevel.Level_2_Startup, $"   │   tcmatch.replacements.txt:".PadRight(60) + replaceFilePath);
 
             browserProfileFolder = Path.Combine(folderOverrides.ContainsKey("BrowserProfile") ? folderOverrides["BrowserProfile"] : dataFolder, "BrowserProfile");
             Log(LoggingLevel.Level_2_Startup, $"   │   BrowserProfile:".PadRight(60) + browserProfileFolder);
+
+            webView2RuntimeFolder = folderOverrides.ContainsKey("WebView2Runtime") ? folderOverrides["WebView2Runtime"] : null;
+            if(webView2RuntimeFolder != null) Log(LoggingLevel.Level_2_Startup, $"   │   WebView2Runtime:".PadRight(60) + webView2RuntimeFolder);
             #endregion
             #region 4. Load Configuration
             // Auto-populate regional system settings directly from the active Host OS context
@@ -447,7 +455,7 @@ namespace tcmatch.Core
         {
             // Mark the first search request as in progress.
             try {
-                Log(LoggingLevel.Level_2_Startup, "   ┌── Create startup sentinel.");
+                Log(LoggingLevel.Level_2_Startup, "    ┌─ Create startup sentinel.");
                 File.WriteAllText(startupSentinelFilePath, string.Empty);
             } catch(Exception ex) {
                 Log(LoggingLevel.Level_1_Errors, $"Error: Could not create startup sentinel: {ex.Message}{Environment.NewLine}{ex}");
@@ -458,7 +466,7 @@ namespace tcmatch.Core
         private static void DeleteStartupSentinel()
         {
             try {
-                Log(LoggingLevel.Level_2_Startup, "   └── Delete startup sentinel.");
+                Log(LoggingLevel.Level_2_Startup, "    └─ Delete startup sentinel.");
                 if(File.Exists(startupSentinelFilePath)) File.Delete(startupSentinelFilePath);
             } catch(Exception ex) {
                 Log(LoggingLevel.Level_1_Errors, $"Error: Could not delete startup sentinel \"{startupSentinelFilePath}\": {ex.Message}{Environment.NewLine}{ex}");
@@ -7660,7 +7668,7 @@ namespace tcmatch.Core
 
                 // Using "BrowserProfile" for transparent profile path definitions
                 if(_webViewEnvironment == null) {
-                    _webViewEnvironment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null, Plugin.browserProfileFolder);
+                    _webViewEnvironment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(Plugin.webView2RuntimeFolder, Plugin.browserProfileFolder);
                 }
 
                 await webView.EnsureCoreWebView2Async(_webViewEnvironment);
@@ -8509,6 +8517,7 @@ namespace tcmatch.Core
 
             if(guiShowWarnings) {
                 if(config.loggingLevel > LoggingLevel.Level_3_SearchQueryPlan) buttons_warnings.Add(CreateButton(Wpf.Ui.Controls.SymbolRegular.DocumentTextClock24, config.L[100_003_010] /* Logging active */, config.L[100_003_011] /* Extensive logging is enabled. This can noticeably reduce search speed. Please disable or reduce it in the settings if it is not needed. */, ButtonStyle.Warning, margin_2_2));
+                if(Plugin.bridgeLogFilePath != null) buttons_warnings.Add(CreateButton(Wpf.Ui.Controls.SymbolRegular.DocumentTextClock24, config.L[100_003_012] /* Bridge Logging active */, config.L[100_003_013] /* Additional logging of the native C++ bridge is enabled. This may noticeably reduce search performance. Please remove the corresponding definition from tcmatch.path.txt when logging is no longer needed. */, ButtonStyle.Warning, margin_2_2));
             }
             #endregion
             #region 7. Text replacements section (Top 25 rules with 2+ characters)

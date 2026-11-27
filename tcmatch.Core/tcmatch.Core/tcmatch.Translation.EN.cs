@@ -375,6 +375,8 @@
 100_003_004=Slow filter evaluation (values from previous search run)! {0} entries evaluated in {1} ms ({2} ms/entry). Plugin startup time: {3} ms. Possible causes: Extensive logging, searching in file contents/WDX fields or disabled cache.
 100_003_010=Logging active
 100_003_011=Extensive logging is enabled. This can noticeably reduce search speed. Please disable or reduce it in the settings if it is not needed.
+100_003_012=Bridge Logging active
+100_003_013=Additional logging of the native C++ bridge is enabled. This may noticeably reduce search performance. Please remove the corresponding definition from tcmatch.path.txt when logging is no longer needed.
 
 100_004_001=Escaping active
 100_004_002=Quoting active
