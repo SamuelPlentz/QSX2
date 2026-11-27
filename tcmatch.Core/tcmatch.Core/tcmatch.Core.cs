@@ -61,7 +61,7 @@ namespace tcmatch.Core
         public static readonly Language languageDefault = Language.English;
         #endregion
         #region Global fields
-        public static string version = "2026-11-21"; // #RELEASE
+        public static string version = "2026-11-27"; // #RELEASE
 
         // Path to files and folders
         public static string pluginFolder;             // e.g., C:\Total Commander\QSX2\
@@ -9250,7 +9250,7 @@ namespace tcmatch.Core
 //  > Change version string in source code above: #RELEASE
 //  > Update CHANGELOG.md
 //  > Update README.md and README.de.md (if necessary)
-//     > Change version string in "tcmatch.Translation.##.cs": #RELEASE
+//     > Change readme version string in "tcmatch.Translation.##.cs": #RELEASE
 //  > Build solution.
 //  > Commit changes and push commit to origin
 //  > Create new Release on GitHub (upload "QSX2 YYYY-MM-DD.zip", copy release notes from CHANGELOG.md)

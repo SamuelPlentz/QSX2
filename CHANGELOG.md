@@ -4,6 +4,48 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 📦 QuickSearch eXtended 2 — Version 2026-11-27
+
+### 🛡️ Startup, Compatibility & Diagnostics
+
+- **Mark of the Web Recovery:** Added automatic recovery when loading `tcmatch.Core.dll` fails due to a Windows security mark. QSX2 attempts to remove the mark. If loading still fails, an error message provides troubleshooting instructions, including manual unblocking.
+- **WebView2 Initialization Recovery:** Added exception handling for WebView2 initialization failures. Errors are logged, and the Documentation and Personal Note views display a localized fallback message with a link to the online GitHub version.
+- **Bridge Logging Warning:** Added a performance warning in the Search Assistant whenever optional native C++ bridge logging is enabled. The warning explains how to disable it via `tcmatch.path.txt`.
+
+### 📂 WebView2 Runtime
+
+- **Fixed Version WebView2 Runtime:** Added optional `WebView2Runtime` path configuration via `tcmatch.path.txt`. This allows portable installations to use a locally deployed Microsoft WebView2 Fixed Version Runtime instead of relying on a system-installed Runtime. Normally, no additional configuration is required.
+
+### 🎨 User Interface & Usability
+
+- **Configuration Window Icon:** Added the QSX2 application icon and applied it to the configuration window and the taskbar.
+- **Window Management:** Changed the configuration window to a normal, non-TopMost window. The Search Assistant's TopMost state is temporarily disabled while the configuration window is open and restored when it closes.
+- **Improved Tooltips:** Changed tooltips to use left-aligned, wrapping text instead of the default justified alignment.
+
+### 🌐 Localization
+
+- **Russian Language Support:** Added a complete Russian UI translation contributed by AntonyD. Added Russian to the language selection and credited the translator in both README files.
+- **New translation strings (DE, EN and RU):** `003_002_005`, `003_002_006`, `100_003_012`, `100_003_013` The four new strings were added to the German and English translations and included in the new Russian translation.
+
+### 📖 Documentation
+
+Updated both the German and English READMEs.
+
+**Major additions and changes:**
+
+- **Chapter 6.2 – Directory Redirection:** Expanded the documentation with a one-line portable `DataFolder` setup, the syntax and rules of `tcmatch.path.txt`, and the optional `WebView2Runtime` path configuration.
+- **Chapter 7.4 – Startup Problems:** Added troubleshooting instructions for Windows Mark of the Web, including the automatic recovery mechanism and manual unblocking procedure.
+
+**Pointwise additions and corrections:**
+
+- **Chapter 3.5 – Replacement Rules:** Clarified how to disable rules and use comment lines in `tcmatch.replacements.txt`.
+- **Chapter 6 – Installation:** Clarified the required Total Commander restart procedure when updating the plugin and the need to avoid reopening Quick Filter before replacing the DLLs.
+- **Chapter 6.2 – Directory Redirection:** Added the multi-user explanation and updated the examples for `BrowserProfile` and `WebView2Runtime`.
+- **Chapter 7.3 – Troubleshooting Checklist:** Added instructions for enabling additional bridge logging and including the bridge log in bug reports.
+- **Chapter 8.1 – Contributors:** Added AntonyD as the Russian translator.
+
+---
+
 ## 📦 QuickSearch eXtended 2 — Version 2026-11-21
 
 ### 🛡️ Startup, Compatibility & Diagnostics
